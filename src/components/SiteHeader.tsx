@@ -130,7 +130,7 @@ export function SiteHeader() {
       <div 
         ref={capsuleRef}
         onClick={toggleMenu}
-        className="h-12 bg-gradient-to-r from-[#0A7C3F]/40 to-[#E87732]/40 backdrop-blur-2xl border border-white/20 relative mx-auto overflow-hidden shadow-2xl cursor-pointer rounded-none z-20"
+        className="h-12 bg-gradient-to-r from-[#0A7C3F]/60 to-[#E87732]/60 backdrop-blur-2xl border border-white/20 relative mx-auto overflow-hidden shadow-2xl cursor-pointer rounded-none z-20"
         style={{ width: "100%" }}
       >
         {/* Closed State Content */}
