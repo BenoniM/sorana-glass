@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, ShieldCheck, Factory, Truck, Award } from "lucide-react";
-import heroImg from "@/assets/hero-glass.jpg";
 import factoryImg from "@/assets/factory.jpg";
 import { products, stats } from "@/lib/site-data";
+import { HeroSection } from "@/components/HeroSection";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -19,44 +19,24 @@ export const Route = createFileRoute("/")({
 function Home() {
   return (
     <>
-      {/* Hero */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0">
-          <img src={heroImg} alt="Modern green glass facade in Addis Ababa" className="h-full w-full object-cover" width={1920} height={1080} />
-          <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/70 to-background/20" />
-        </div>
-        <div className="relative mx-auto flex min-h-[85vh] max-w-7xl flex-col justify-center px-6 py-24">
-          <span className="inline-flex w-fit items-center gap-2 rounded-full border border-accent/40 bg-accent/10 px-3 py-1 text-xs font-medium uppercase tracking-widest text-accent-foreground">
-            <span className="h-1.5 w-1.5 rounded-full bg-accent" /> Sorana Glass · Est. 2017
-          </span>
-          <h1 className="mt-6 max-w-3xl font-display text-5xl font-bold leading-[1.05] text-balance md:text-7xl">
-            Engineering light into Ethiopia's <span className="text-accent">finest spaces</span>.
-          </h1>
-          <p className="mt-6 max-w-xl text-lg text-muted-foreground">
-            Over 20 years of glass craftsmanship. From tempered facades to frameless showers and
-            automotive windshields — processed, finished and installed in Addis Ababa.
-          </p>
-          <div className="mt-10 flex flex-wrap gap-4">
-            <Link to="/contact" className="inline-flex items-center gap-2 rounded-md bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-elegant transition hover:opacity-90">
-              Request a quote <ArrowRight className="h-4 w-4" />
-            </Link>
-            <Link to="/products" className="inline-flex items-center gap-2 rounded-md border border-border bg-background/60 px-6 py-3 text-sm font-semibold backdrop-blur hover:bg-background">
-              Explore products
-            </Link>
-          </div>
+      {/* ── Full-screen hero with diagonal image strips ─────────────────────── */}
+      <HeroSection />
 
-          <div className="mt-16 grid max-w-3xl grid-cols-2 gap-6 md:grid-cols-4">
+      {/* ── Stats strip (moved out of hero) ────────────────────────────────── */}
+      <section className="bg-surface border-b border-border">
+        <div className="mx-auto max-w-7xl px-6 py-10">
+          <dl className="grid grid-cols-2 gap-8 md:grid-cols-4">
             {stats.map((s) => (
-              <div key={s.label}>
-                <div className="font-display text-3xl font-bold text-primary md:text-4xl">{s.value}</div>
-                <div className="mt-1 text-xs uppercase tracking-wider text-muted-foreground">{s.label}</div>
+              <div key={s.label} className="flex flex-col items-center text-center md:items-start md:text-left">
+                <dt className="font-display text-4xl font-bold text-primary md:text-5xl">{s.value}</dt>
+                <dd className="mt-1 text-xs uppercase tracking-wider text-muted-foreground">{s.label}</dd>
               </div>
             ))}
-          </div>
+          </dl>
         </div>
       </section>
 
-      {/* Value props */}
+      {/* ── Value props ─────────────────────────────────────────────────────── */}
       <section className="mx-auto max-w-7xl px-6 py-24">
         <div className="grid gap-10 md:grid-cols-2 md:items-center">
           <div>
@@ -93,7 +73,7 @@ function Home() {
         </div>
       </section>
 
-      {/* Featured products */}
+      {/* ── Featured products ───────────────────────────────────────────────── */}
       <section className="bg-surface py-24">
         <div className="mx-auto max-w-7xl px-6">
           <div className="flex flex-wrap items-end justify-between gap-4">
@@ -121,7 +101,7 @@ function Home() {
         </div>
       </section>
 
-      {/* CTA */}
+      {/* ── CTA ─────────────────────────────────────────────────────────────── */}
       <section className="mx-auto max-w-7xl px-6 py-24">
         <div className="overflow-hidden rounded-3xl bg-gradient-hero p-10 text-primary-foreground shadow-elegant md:p-16">
           <div className="grid gap-10 md:grid-cols-2 md:items-center">

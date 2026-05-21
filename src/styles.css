@@ -1,4 +1,4 @@
-@import "tailwindcss" source(none);
+@import "tailwindcss";
 @source "../src";
 @import "tw-animate-css";
 
@@ -121,3 +121,265 @@
   .shadow-card { box-shadow: var(--shadow-card); }
   .text-balance { text-wrap: balance; }
 }
+
+/* Loading Screen Animation Styles */
+.loading-logo-circle {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 90px;
+  height: 90px;
+  border-radius: 9999px;
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translate(-50%, -50%);
+  box-sizing: border-box;
+}
+
+.loading-logo-inner {
+  width: 86px;
+  height: 86px;
+  border-radius: 9999px;
+  aspect-ratio: 1 / 1;
+  background-color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  z-index: 10;
+}
+
+.loading-logo-img {
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+  user-select: none;
+}
+
+.loading-circle-draw {
+  stroke-dasharray: 280;
+  stroke-dashoffset: 280;
+  transform: rotate(-90deg);
+  transform-origin: center;
+  animation: circle-draw 2.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+/* Edge Lines */
+.loading-edge-line-left {
+  position: absolute;
+  left: 3rem;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background-color: #0A7C3F;
+  animation: line-detract-left 2.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+.loading-edge-line-right {
+  position: absolute;
+  right: 3rem;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background-color: #E87732;
+  animation: line-detract-right 2.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+/* Center Lines (aligned to panel inner edges) */
+.loading-center-line-top {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 2px;
+  background-color: #0A7C3F;
+  animation: line-extend-top 2.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+.loading-center-line-bottom {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 2px;
+  background-color: #E87732;
+  animation: line-extend-bottom 2.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+/* Animations */
+@keyframes logo-rotate {
+  0% {
+    transform: translate(-50%, -50%) rotate(180deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+@keyframes circle-draw {
+  0% {
+    stroke-dashoffset: 280;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes line-detract-left {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-105vh);
+  }
+}
+
+@keyframes line-detract-right {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(105vh);
+  }
+}
+
+@keyframes line-extend-top {
+  0% {
+    height: 0;
+  }
+  100% {
+    height: calc(50vh - 45px);
+  }
+}
+
+@keyframes line-extend-bottom {
+  0% {
+    height: 0;
+  }
+  100% {
+    height: calc(50vh - 45px);
+  }
+}
+
+
+/* ============================================================
+   Hero Section — Diagonal Image Strips
+   ============================================================ */
+
+/**
+ * Outer wrapper: rotated so the strips look diagonal.
+ * scale(1.6) ensures the rotated strips cover the entire viewport
+ * without any gaps at the corners.
+ */
+.hero-strips-wrapper {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  /* Inclined the angle more (-25deg instead of -14deg) and adjusted scale */
+  transform: rotate(-25deg) scale(1.8);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  align-items: flex-start;
+  justify-content: center;
+  pointer-events: none;
+  user-select: none;
+}
+
+/**
+ * Individual strip row — scrolls horizontally in an infinite loop.
+ * Content is duplicated so the loop is seamless.
+ * will-change: transform → browser allocates a dedicated GPU layer.
+ */
+.hero-strip {
+  display: flex;
+  flex-shrink: 0;
+  gap: 16px;
+  width: max-content;
+  will-change: transform;
+}
+
+/* Scroll LEFT  (pairs drift right → left) */
+.hero-strip-ltr {
+  animation: hero-ltr linear infinite;
+}
+
+/* Scroll RIGHT (pairs drift left → right) */
+.hero-strip-rtl {
+  animation: hero-rtl linear infinite;
+}
+
+/**
+ * A "pair" = 2 images from the same folder, always placed side-by-side.
+ * Fixed dimensions keep the pixel offset in @keyframes exact.
+ * Image size: 230 × 310 px  |  within-pair gap: 10 px
+ */
+.hero-pair {
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.hero-pair-img {
+  width: 230px;
+  height: 310px;
+  object-fit: cover;
+  border-radius: 0; /* Removed roundedness */
+  flex-shrink: 0;
+  backface-visibility: hidden;
+}
+
+/*
+ * Cycle length calculation (6 pairs per strip, duplicated for seamless loop):
+ *   pair width        = 230 + 10 + 230 = 470 px
+ *   inter-pair gap    = 16 px
+ *   6 pairs content   = 6 × 470 + 5 × 16 = 2820 + 80 = 2900 px
+ *   + bridging gap    = 16 px
+ *   → CYCLE           = 2916 px
+ */
+@keyframes hero-ltr {
+  0%   { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(-2916px, 0, 0); }
+}
+
+@keyframes hero-rtl {
+  0%   { transform: translate3d(-2916px, 0, 0); }
+  100% { transform: translate3d(0, 0, 0); }
+}
+
+/* ============================================================
+   Hero brand-colour overlay  (#0A7C3F → #E87732)
+   Fades to opacity:0 via GSAP ScrollTrigger on scroll.
+   ============================================================ */
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  background: linear-gradient(
+    45deg,
+    rgba(232, 119, 50, 0.95) 0%, /* Stronger color at bottom left */
+    rgba(232, 119, 50, 0.4) 20%,
+    rgba(10, 124, 63, 0.1) 50%,
+    rgba(10, 124, 63, 0.4) 80%,
+    rgba(10, 124, 63, 0.95) 100% /* Stronger color at top right */
+  );
+  pointer-events: none;
+  will-change: opacity;
+}
+
+/* ============================================================
+   Hero scroll-hint bouncing dot
+   ============================================================ */
+.hero-scroll-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background: currentColor;
+  animation: hero-dot-bounce 1.6s ease-in-out infinite;
+}
+
+@keyframes hero-dot-bounce {
+  0%, 100% { transform: translateY(0);    opacity: 0.4; }
+  50%       { transform: translateY(6px); opacity: 0.9; }
+}
+
