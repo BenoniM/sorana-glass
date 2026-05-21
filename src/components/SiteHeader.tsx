@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Menu, X, Phone } from "lucide-react";
-import logoImg from "@/assets/logo/IMG_1453 - Robel Tefera.jpeg";
+import logoImg from "@/assets/logo/Sorana-Logo.png";
 
 const nav = [
   { to: "/", label: "Home" },

@@ -67,7 +67,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Sorana Glass — Advanced Glass Processing in Ethiopia" },
+      { title: "Sorana Glass" },
       { name: "description", content: "Sorana Glass is one of Ethiopia's leading glass processing factories — tempered, laminated, architectural and automotive glass with over 20 years of expertise." },
       { name: "author", content: "Sorana Glass" },
       { property: "og:title", content: "Sorana Glass — Advanced Glass Processing in Ethiopia" },
@@ -75,7 +75,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
-    links: [{ rel: "stylesheet", href: appCss }],
+    links: [{ rel: "stylesheet", href: appCss }, { rel: "icon", href: "src/assets/logo/Sorana-Logo.png" }
+    ],
   }),
   shellComponent: RootShell,
   component: RootComponent,

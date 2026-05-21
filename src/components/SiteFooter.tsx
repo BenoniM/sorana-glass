@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Phone, Mail, MapPin } from "lucide-react";
-import logoImg from "@/assets/logo/IMG_1453 - Robel Tefera.jpeg";
+import logoImg from "@/assets/logo/Sorana-Logo.png";
 
 export function SiteFooter() {
   return (
