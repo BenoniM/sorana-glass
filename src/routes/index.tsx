@@ -3,6 +3,7 @@ import { ArrowRight } from "lucide-react";
 import { stats } from "@/lib/site-data";
 import { HeroSection } from "@/components/HeroSection";
 import { ServicesSection } from "@/components/ServicesSection";
+import { IndustriesSection } from "@/components/Industriessection";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -22,10 +23,11 @@ function Home() {
       {/* ── Full-screen hero with diagonal image strips ─────────────────────── */}
       <HeroSection />
 
-
-
       {/* ── Services catalogue ───────────────────────────────────────────────── */}
       <ServicesSection />
+
+      {/* ── Industries we serve (DuChateau-style scroll) ─────────────────────── */}
+      <IndustriesSection />
 
       {/* ── CTA ─────────────────────────────────────────────────────────────── */}
       <section className="mx-auto max-w-7xl px-6 py-24">
