@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, ShieldCheck, Factory, Truck, Award } from "lucide-react";
 import factoryImg from "@/assets/factory.jpg";
-import { products, stats } from "@/lib/site-data";
+import { stats } from "@/lib/site-data";
 import { HeroSection } from "@/components/HeroSection";
 
 export const Route = createFileRoute("/")({
@@ -22,7 +22,7 @@ function Home() {
       {/* ── Full-screen hero with diagonal image strips ─────────────────────── */}
       <HeroSection />
 
-      {/* ── Stats strip (moved out of hero) ────────────────────────────────── */}
+      {/* ── Stats strip ─────────────────────────────────────────────────────── */}
       <section className="bg-surface border-b border-border">
         <div className="mx-auto max-w-7xl px-6 py-10">
           <dl className="grid grid-cols-2 gap-8 md:grid-cols-4">
@@ -50,10 +50,10 @@ function Home() {
             </p>
             <div className="mt-8 grid gap-6 sm:grid-cols-2">
               {[
-                { icon: Factory, title: "4 tempering furnaces", body: "Up to 2,000 m² of processed glass every day." },
-                { icon: ShieldCheck, title: "Grade-One float glass", body: "Direct imports and strict QC at every stage." },
-                { icon: Truck, title: "Fast delivery", body: "Strategic Addis Ababa location with city-wide logistics." },
-                { icon: Award, title: "20+ years experience", body: "Skilled, long-serving technical teams." },
+                { icon: Factory,     title: "4 tempering furnaces",  body: "Up to 2,000 m² of processed glass every day."            },
+                { icon: ShieldCheck, title: "Grade-One float glass", body: "Direct imports and strict QC at every stage."             },
+                { icon: Truck,       title: "Fast delivery",         body: "Strategic Addis Ababa location with city-wide logistics." },
+                { icon: Award,       title: "20+ years experience",  body: "Skilled, long-serving technical teams."                   },
               ].map((f) => (
                 <div key={f.title} className="rounded-xl border border-border bg-card p-5 shadow-card">
                   <f.icon className="h-6 w-6 text-accent" />
@@ -64,39 +64,18 @@ function Home() {
             </div>
           </div>
           <div className="relative">
-            <img src={factoryImg} alt="Sorana glass tempering furnace" className="rounded-2xl shadow-elegant" loading="lazy" width={1600} height={1024} />
+            <img
+              src={factoryImg}
+              alt="Sorana glass tempering furnace"
+              className="rounded-2xl shadow-elegant"
+              loading="lazy"
+              width={1600}
+              height={1024}
+            />
             <div className="absolute -bottom-6 -left-6 hidden rounded-xl bg-primary p-6 text-primary-foreground shadow-elegant md:block">
               <div className="font-display text-3xl font-bold">North Glass</div>
               <div className="text-xs uppercase tracking-widest opacity-80">Latest furnace upgrade</div>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Featured products ───────────────────────────────────────────────── */}
-      <section className="bg-surface py-24">
-        <div className="mx-auto max-w-7xl px-6">
-          <div className="flex flex-wrap items-end justify-between gap-4">
-            <div>
-              <p className="text-sm font-semibold uppercase tracking-widest text-accent">Products</p>
-              <h2 className="mt-2 font-display text-4xl font-bold">A complete glass catalogue.</h2>
-            </div>
-            <Link to="/products" className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:opacity-80">
-              See all products <ArrowRight className="h-4 w-4" />
-            </Link>
-          </div>
-          <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {products.slice(0, 6).map((p) => (
-              <article key={p.name} className="group overflow-hidden rounded-2xl border border-border bg-card shadow-card transition hover:shadow-elegant">
-                <div className="aspect-[4/3] overflow-hidden">
-                  <img src={p.image} alt={p.name} className="h-full w-full object-cover transition duration-700 group-hover:scale-105" loading="lazy" width={1024} height={768} />
-                </div>
-                <div className="p-6">
-                  <h3 className="font-display text-xl font-semibold">{p.name}</h3>
-                  <p className="mt-2 text-sm text-muted-foreground">{p.desc}</p>
-                </div>
-              </article>
-            ))}
           </div>
         </div>
       </section>
@@ -115,10 +94,16 @@ function Home() {
               </p>
             </div>
             <div className="flex flex-wrap gap-4 md:justify-end">
-              <Link to="/contact" className="inline-flex items-center gap-2 rounded-md bg-accent px-6 py-3 text-sm font-semibold text-accent-foreground hover:opacity-90">
+              <Link
+                to="/contact"
+                className="inline-flex items-center gap-2 rounded-md bg-accent px-6 py-3 text-sm font-semibold text-accent-foreground hover:opacity-90"
+              >
                 Start a project <ArrowRight className="h-4 w-4" />
               </Link>
-              <a href="tel:+251960323232" className="inline-flex items-center gap-2 rounded-md border border-primary-foreground/30 px-6 py-3 text-sm font-semibold hover:bg-primary-foreground/10">
+              <a
+                href="tel:+251960323232"
+                className="inline-flex items-center gap-2 rounded-md border border-primary-foreground/30 px-6 py-3 text-sm font-semibold hover:bg-primary-foreground/10"
+              >
                 Call us
               </a>
             </div>

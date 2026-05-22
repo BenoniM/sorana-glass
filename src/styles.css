@@ -284,6 +284,10 @@
   justify-content: center;
   pointer-events: none;
   user-select: none;
+  /* Keep this element on its own GPU composite layer at all times so
+     reversing the scroll never triggers a layer-reconstruction flash */
+  will-change: transform, opacity;
+  contain: layout style paint;
 }
 
 /**
@@ -324,9 +328,17 @@
   width: 230px;
   height: 310px;
   object-fit: cover;
-  border-radius: 0; /* Removed roundedness */
-  flex-shrink: 0;
-  backface-visibility: hidden;
+  filter: brightness(0.65);
+  /* NO CSS transition here — a transition on filter/transform fires when
+     is-active is removed during scroll-up, creating a visible brightness
+     flash that fights GSAP. Brightness changes are instant; GSAP controls
+     the fade-out of the entire wrapper so smoothness is preserved. */
+  will-change: transform;
+}
+
+.hero-pair:hover .hero-pair-img,
+.hero-pair.is-active .hero-pair-img {
+  filter: brightness(1);
 }
 
 /*
@@ -382,4 +394,122 @@
   0%, 100% { transform: translateY(0);    opacity: 0.4; }
   50%       { transform: translateY(6px); opacity: 0.9; }
 }
+
+/* ============================================================
+   Hero — Product info card (swipes open from a thin line)
+   ============================================================ */
+
+/**
+ * Positioned at the centre of the expanded overlay.
+ * GSAP controls scaleY (0 → 1) to create the "thin line → open box" reveal.
+ */
+.hero-info-card {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: clamp(340px, 62vw, 820px);
+  z-index: 15;
+  overflow: hidden;
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateZ(0);
+}
+
+/* 4-corner layout container */
+.hero-info-card-inner {
+  position: relative;
+  width: 100%;
+  min-height: 140px;
+}
+
+.hero-info-card-layer {
+  position: absolute;
+  inset: 0;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-top:    1px solid rgba(232, 119, 50, 0.35);
+  border-bottom: 1px solid rgba(232, 119, 50, 0.35);
+  border-left:   1px solid rgba(255, 255, 255, 0.08);
+  border-right:  1px solid rgba(255, 255, 255, 0.08);
+  will-change: clip-path;
+}
+
+/* ── Top Left: Title ── */
+.hero-card-tl {
+  position: absolute;
+  top: 1.5rem;
+  left: 2rem;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary, #fff);
+  letter-spacing: -0.01em;
+}
+
+/* ── Bottom Left: Category ── */
+.hero-card-bl {
+  position: absolute;
+  bottom: 1.5rem;
+  left: 2rem;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--text-bl, #E87732);
+}
+
+/* ── Top Right: Arrow Link ── */
+.hero-card-tr {
+  position: absolute;
+  top: 1.5rem;
+  right: 2rem;
+  color: var(--arrow-color, rgba(255, 255, 255, 0.7));
+  transition: color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.hero-card-tr svg {
+  transform: rotate(-45deg);
+  transition: transform 0.2s;
+}
+.hero-card-tr:hover {
+  color: var(--text-primary, #fff);
+}
+.hero-card-tr:hover svg {
+  transform: rotate(-45deg) scale(1.2);
+}
+
+/* ── Bottom Right: Products label ── */
+.hero-card-br {
+  position: absolute;
+  bottom: 1.5rem;
+  right: 2rem;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--text-br, #ffffff);
+}
+
+/* ── Center: Stamped Logo ── */
+.hero-card-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.hero-card-logo-img {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+  /* Stamped / embossed impression */
+  filter: brightness(0) invert(1);
+  opacity: 0.15;
+}
+
 
