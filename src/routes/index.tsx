@@ -36,49 +36,7 @@ function Home() {
         </div>
       </section>
 
-      {/* ── Value props ─────────────────────────────────────────────────────── */}
-      <section className="mx-auto max-w-7xl px-6 py-24">
-        <div className="grid gap-10 md:grid-cols-2 md:items-center">
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-widest text-accent">Why Sorana</p>
-            <h2 className="mt-3 font-display text-4xl font-bold text-balance md:text-5xl">
-              Capacity, craftsmanship and consistency in every panel.
-            </h2>
-            <p className="mt-6 text-muted-foreground">
-              From the early days of automotive glass to one of the country's most advanced tempering
-              facilities, Sorana has scaled without losing the discipline that built its reputation.
-            </p>
-            <div className="mt-8 grid gap-6 sm:grid-cols-2">
-              {[
-                { icon: Factory,     title: "4 tempering furnaces",  body: "Up to 2,000 m² of processed glass every day."            },
-                { icon: ShieldCheck, title: "Grade-One float glass", body: "Direct imports and strict QC at every stage."             },
-                { icon: Truck,       title: "Fast delivery",         body: "Strategic Addis Ababa location with city-wide logistics." },
-                { icon: Award,       title: "20+ years experience",  body: "Skilled, long-serving technical teams."                   },
-              ].map((f) => (
-                <div key={f.title} className="rounded-xl border border-border bg-card p-5 shadow-card">
-                  <f.icon className="h-6 w-6 text-accent" />
-                  <h3 className="mt-3 font-display text-lg font-semibold">{f.title}</h3>
-                  <p className="mt-1 text-sm text-muted-foreground">{f.body}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="relative">
-            <img
-              src={factoryImg}
-              alt="Sorana glass tempering furnace"
-              className="rounded-2xl shadow-elegant"
-              loading="lazy"
-              width={1600}
-              height={1024}
-            />
-            <div className="absolute -bottom-6 -left-6 hidden rounded-xl bg-primary p-6 text-primary-foreground shadow-elegant md:block">
-              <div className="font-display text-3xl font-bold">North Glass</div>
-              <div className="text-xs uppercase tracking-widest opacity-80">Latest furnace upgrade</div>
-            </div>
-          </div>
-        </div>
-      </section>
+
 
       {/* ── CTA ─────────────────────────────────────────────────────────────── */}
       <section className="mx-auto max-w-7xl px-6 py-24">

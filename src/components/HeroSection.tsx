@@ -4,6 +4,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import logoSvg from "@/assets/logo/Sorana-Logo.svg";
+import aboutVideoSrc from "@/assets/video-about/220941_medium.mp4";
 
 // --- Image imports: images from the same folder are always kept as a pair ---
 import tempered1   from "@/assets/glasses/tempered/pexels-joerg-hartmann-626385254-20677918.jpg";
@@ -63,8 +64,8 @@ function buildStripPairs(start: number, count = 6): PairEntry[] {
 // Number of additional product showcases after the initial reveal
 const EXTRA_STEPS = 2;
 
-// Total scroll height: 200vh for phase1+2, then 150vh per extra step, then 100vh buffer to exactly match ScrollTrigger end
-const TOTAL_VH = 200 + EXTRA_STEPS * 130 + 80;
+// Products end at 500vh (2 + 2*1.5). About panel runs 500–700vh. Buffer 80vh → 780vh total.
+const TOTAL_VH = 780;
 
 export function HeroSection() {
   // ── DOM refs ──────────────────────────────────────────────────────────────
@@ -77,8 +78,15 @@ export function HeroSection() {
   const scrimRef           = useRef<HTMLDivElement>(null);
 
   // Expanded view refs
-  const infoCardRef         = useRef<HTMLDivElement>(null);
-  const infoCardInnerRef    = useRef<HTMLDivElement>(null);
+  const infoCardRef          = useRef<HTMLDivElement>(null);
+  const infoCardInnerRef     = useRef<HTMLDivElement>(null);
+
+  // About panel refs
+  const aboutPanelRef        = useRef<HTMLDivElement>(null);
+  const aboutVideoRef        = useRef<HTMLVideoElement>(null);
+  const aboutContentRef      = useRef<HTMLDivElement>(null);
+  const aboutVideoWrapperRef = useRef<HTMLDivElement>(null);
+  const lensRef              = useRef<HTMLDivElement>(null);
 
   // Scroll-state tracking
   const hasFoundCenterRef     = useRef(false);
@@ -372,10 +380,77 @@ export function HeroSection() {
         },
       });
 
+      // ── About Panel Reveal (Step 4) ──────────────────────────────────────
+      // Products ST ends at (2 + EXTRA_STEPS * 1.5) = 5 viewport heights
+      const ABOUT_START_VH = 2 + EXTRA_STEPS * 1.25;
+      ScrollTrigger.create({
+        trigger: scrollContainerRef.current,
+        start:   `top+=${window.innerHeight * ABOUT_START_VH} top`,
+        end:     `top+=${window.innerHeight * (ABOUT_START_VH + 2)} top`,
+        scrub:   1.2,
+        onUpdate: (self) => {
+          const p = self.progress;
+          // White panel slides in from LEFT: clip right edge 100%→0%
+          if (aboutPanelRef.current) {
+            aboutPanelRef.current.style.clipPath = `inset(0 ${100 - p * 100}% 0 0)`;
+            aboutPanelRef.current.style.pointerEvents = p > 0.5 ? 'auto' : 'none';
+          }
+          // Video wipes in from RIGHT: clip left edge 100%→0%
+          if (aboutVideoRef.current) {
+            aboutVideoRef.current.style.clipPath = `inset(0 0 0 ${100 - p * 100}%)`;
+          }
+          // Enable cursor interactions on video wrapper when visible
+          if (aboutVideoWrapperRef.current) {
+            aboutVideoWrapperRef.current.style.pointerEvents = p > 0.1 ? 'auto' : 'none';
+          }
+          // Content fades + rises in after panel is 65% revealed
+          if (aboutContentRef.current) {
+            const cP = Math.max(0, (p - 0.65) / 0.35);
+            aboutContentRef.current.style.opacity = String(cP);
+            aboutContentRef.current.style.transform = `translateY(${(1 - cP) * 22}px)`;
+          }
+        },
+      });
+
     }, scrollContainerRef);
+
+    // ── Glass lens cursor effect (outside GSAP context) ────────────────────
+    const LENS_R = 70;
+    const rightWrapper = aboutVideoWrapperRef.current;
+    const lensEl = lensRef.current;
+
+    const handlePointerMove = (e: PointerEvent) => {
+      if (!lensEl) return;
+      const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+      gsap.set(lensEl, {
+        x: e.clientX - rect.left - LENS_R,
+        y: e.clientY - rect.top - LENS_R,
+        autoAlpha: 1,
+        scale: 1,
+      });
+    };
+    const handlePointerLeave = () => {
+      if (!lensEl) return;
+      gsap.to(lensEl, { autoAlpha: 0, scale: 0.85, duration: 0.35, ease: 'power2.out' });
+    };
+    const handlePointerEnter = () => {
+      if (!lensEl) return;
+      gsap.to(lensEl, { scale: 1, duration: 0.4, ease: 'back.out(1.4)' });
+    };
+
+    if (rightWrapper) {
+      rightWrapper.addEventListener('pointermove', handlePointerMove as EventListener);
+      rightWrapper.addEventListener('pointerleave', handlePointerLeave);
+      rightWrapper.addEventListener('pointerenter', handlePointerEnter);
+    }
 
     return () => {
       clearTimeout(timerRef.current);
+      if (rightWrapper) {
+        rightWrapper.removeEventListener('pointermove', handlePointerMove as EventListener);
+        rightWrapper.removeEventListener('pointerleave', handlePointerLeave);
+        rightWrapper.removeEventListener('pointerenter', handlePointerEnter);
+      }
       ctx.revert();
     };
   }, []);
@@ -438,7 +513,63 @@ export function HeroSection() {
           ))}
         </div>
 
-        {/* ── Brand-colour overlay (fades on scroll phase 1) ─────────────────── */}
+        {/* ── About Panel (Step 4: slides in after all products) ─────────────── */}
+        <div style={{ position: 'absolute', inset: 0, zIndex: 20, pointerEvents: 'none' }}>
+
+          {/* LEFT: white glassmorphic panel ─ slides in from left */}
+          <div
+            ref={aboutPanelRef}
+            className="about-panel"
+            style={{ clipPath: 'inset(0 100% 0 0)', pointerEvents: 'none' }}
+          >
+            <div
+              ref={aboutContentRef}
+              className="about-panel-content"
+              style={{ opacity: 0, transform: 'translateY(22px)' }}
+            >
+              <p className="about-panel-label">About Us</p>
+              <h2 className="about-panel-title">
+                From auto glass roots to Ethiopia's most advanced processor.
+              </h2>
+              <p className="about-panel-body">
+                Sorana Glass began with deep technical expertise in automotive glass and has grown
+                into a fully integrated solutions provider — combining over 20 years of industry
+                experience with modern production technology.
+              </p>
+              <p className="about-panel-body" style={{ marginTop: '1rem' }}>
+                Today the factory produces up to 2,000 m² per day and supplies contractors, real
+                estate developers, hotels, hospitals and industrial facilities across Ethiopia.
+              </p>
+              <Link to="/about" className="about-panel-link">
+                Our Story <ArrowRight size={16} />
+              </Link>
+            </div>
+          </div>
+
+          {/* RIGHT: factory video with glassy cursor lens */}
+          <div
+            ref={aboutVideoWrapperRef}
+            className="about-video-wrapper"
+            style={{ pointerEvents: 'none' }}
+          >
+            <video
+              ref={aboutVideoRef}
+              src={aboutVideoSrc}
+              autoPlay
+              loop
+              muted
+              playsInline
+              style={{ width: '100%', height: '100%', objectFit: 'cover', clipPath: 'inset(0 0 0 100%)' }}
+            />
+            {/* Glassy cursor lens — follows pointer, blurs+brightens video beneath */}
+            <div ref={lensRef} className="about-lens" aria-hidden="true">
+              <div className="about-lens-ring" />
+              <div className="about-lens-highlight" />
+            </div>
+          </div>
+        </div>
+
+        {/* ── Brand-colour overlay (fades on scroll phase 1) ───────────────────── */}
         <div ref={overlayRef} className="hero-overlay" aria-hidden="true" />
 
         {/* ── Dark scrim for text legibility ────────────────────────────────── */}
@@ -448,6 +579,14 @@ export function HeroSection() {
           style={{ zIndex: 6, background: "linear-gradient(to bottom, rgba(10,20,15,0.55) 0%, rgba(10,20,15,0.35) 100%)" }}
           aria-hidden="true"
         />
+
+        {/* ── SVG filter for lens distortion ────────────────────────────────── */}
+        <svg style={{ display: 'none' }}>
+          <filter id="hero-glass-distort" x="-20%" y="-20%" width="140%" height="140%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.018 0.022" numOctaves="2" seed="5" result="noise" />
+            <feDisplacementMap in="SourceGraphic" in2="noise" scale="28" xChannelSelector="R" yChannelSelector="G" />
+          </filter>
+        </svg>
 
         {/* ── Hero text content ──────────────────────────────────────────────── */}
         <div
@@ -511,15 +650,20 @@ export function HeroSection() {
                 className="hero-info-card-layer"
                 style={{
                   zIndex: i,
-                  // Initial: dark green, Middle: #C06B2F, Last: dark green again
-                  background: i === 1 ? 'rgba(192, 107, 47, 0.96)' : 'rgba(4, 50, 25, 0.96)',
+                  // Glassy gradient: using the main color and a darker version with transparency
+                  // Orange bg: rgba(192,107,47) -> darker rgba(130,65,25)
+                  // Green bg: rgba(10,124,63) -> darker rgba(4,50,25)
+                  background: i === 1 
+                    ? 'linear-gradient(145deg, rgba(192, 107, 47, 0.45) 0%, rgba(130, 65, 25, 0.65) 100%)' 
+                    : 'linear-gradient(145deg, rgba(10, 124, 63, 0.4) 0%, rgba(4, 50, 25, 0.65) 100%)',
+                  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.1), 0 8px 32px rgba(0,0,0,0.3)',
                   clipPath: i === 0 ? 'inset(0 0 0 0)' : 'inset(0 0 100% 0)',
                   pointerEvents: i === 0 ? 'auto' : 'none',
                   // CSS variables to override text colors on the orange background
                   '--text-primary': '#ffffff',
-                  '--text-bl': i === 1 ? '#0A7C3F' : '#E87732',
+                  '--text-bl': i === 1 ? '#0ae26fff' : '#f98d4aff',
                   '--text-br': '#ffffff',
-                  '--arrow-color': i === 1 ? '#0A7C3F' : 'rgba(255,255,255,0.7)',
+                  '--arrow-color': i === 1 ? '#0ae26fff' : '#f98d4aff',
                 } as React.CSSProperties}
               >
                 {/* Center: Stamped Logo */}
