@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, ShieldCheck, Factory, Truck, Award } from "lucide-react";
-import factoryImg from "@/assets/factory.jpg";
+import { ArrowRight } from "lucide-react";
 import { stats } from "@/lib/site-data";
 import { HeroSection } from "@/components/HeroSection";
+import { ServicesSection } from "@/components/ServicesSection";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -22,21 +22,10 @@ function Home() {
       {/* ── Full-screen hero with diagonal image strips ─────────────────────── */}
       <HeroSection />
 
-      {/* ── Stats strip ─────────────────────────────────────────────────────── */}
-      <section className="bg-surface border-b border-border">
-        <div className="mx-auto max-w-7xl px-6 py-10">
-          <dl className="grid grid-cols-2 gap-8 md:grid-cols-4">
-            {stats.map((s) => (
-              <div key={s.label} className="flex flex-col items-center text-center md:items-start md:text-left">
-                <dt className="font-display text-4xl font-bold text-primary md:text-5xl">{s.value}</dt>
-                <dd className="mt-1 text-xs uppercase tracking-wider text-muted-foreground">{s.label}</dd>
-              </div>
-            ))}
-          </dl>
-        </div>
-      </section>
 
 
+      {/* ── Services catalogue ───────────────────────────────────────────────── */}
+      <ServicesSection />
 
       {/* ── CTA ─────────────────────────────────────────────────────────────── */}
       <section className="mx-auto max-w-7xl px-6 py-24">

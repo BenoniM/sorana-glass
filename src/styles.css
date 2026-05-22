@@ -676,3 +676,164 @@
   z-index: 1;
   will-change: clip-path;
 }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   Services Section  (McAlpine-style overlay + split header)
+══════════════════════════════════════════════════════════════════════════ */
+.svc-section {
+  position: relative;
+  /* Add negative margin to overlap the pinned hero early */
+  margin-top: -100vh;
+  z-index: 20;
+  padding: 0 0 10rem;
+  overflow: visible;
+  /* Transparent so the box looks like it's floating up */
+  background: transparent;
+}
+
+/* The expanding box that starts narrow and expands to full screen */
+.svc-box {
+  position: relative;
+  margin: 0 auto;
+  max-width: 100%;
+  overflow: hidden;
+  /* Glassy translucent background with noticeable green and orange hints */
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.55) 0%,
+    rgba(22, 235, 122, 0.45) 30%,
+    rgba(255, 255, 255, 0.55) 70%,
+    rgba(250, 131, 58, 0.45) 100%
+  );
+  backdrop-filter: blur(32px);
+  -webkit-backdrop-filter: blur(32px);
+  border-top: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 -20px 60px rgba(0,0,0,0.10);
+  padding-bottom: 8rem;
+  /* Ensure a minimum height so it fully covers the viewport */
+  min-height: 100vh;
+}
+
+/* ── Split Section Header ──────────────────────────────────────────────── */
+.svc-header-mcalpine {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6rem 4rem;
+  width: 100%;
+  max-width: 1800px;
+  margin: 0 auto;
+}
+
+.svc-title-left,
+.svc-title-right {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 3vw, 2.5rem);
+  font-weight: 400;
+  margin: 0;
+  line-height: 1;
+}
+
+.svc-header-img-wrapper {
+  width: clamp(250px, 40vw, 550px);
+  aspect-ratio: 21 / 9;
+  overflow: hidden;
+  margin: 0 2rem;
+}
+
+.svc-header-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* filter: grayscale(100%) contrast(1.1); */
+}
+
+/* ── Vertical centered service list ────────────────────────────────────── */
+.svc-list {
+  list-style: none;
+  margin: 0;
+  padding: 4rem 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.svc-item {
+  position: relative;
+  cursor: pointer;
+  width: 100%;
+  max-width: 1200px;
+  border-top: 1px solid transparent;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.3s ease, opacity 0.3s ease;
+  /* Prevent double borders */
+  margin-top: -1px;
+}
+
+.svc-item-link {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 1.5rem 0;
+  text-decoration: none;
+}
+
+.svc-item:hover,
+.svc-item.is-active {
+  border-color: var(--border);
+  z-index: 2; /* Bring active border to top */
+}
+
+.svc-item.is-dimmed {
+  opacity: 0.25;
+}
+
+.svc-item-text-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.svc-item-name {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4vw, 5rem);
+  font-weight: 400;
+  color: var(--foreground);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.svc-item-index {
+  position: absolute;
+  top: -0.4rem;
+  right: -1.4rem;
+  font-family: var(--font-display);
+  font-size: clamp(0.7rem, 1vw, 1rem);
+  font-weight: 600;
+  color: var(--muted-foreground);
+  transition: color 0.3s ease;
+}
+
+.svc-item:hover .svc-item-index,
+.svc-item.is-active .svc-item-index {
+  color: var(--foreground);
+}
+
+/* ── Inline hover images (left side) ───────────────────────────────────── */
+.svc-item-images {
+  position: absolute;
+  left: 2rem;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  gap: 0.5rem;
+  pointer-events: none;
+}
+
+.svc-item-img {
+  /* Height perfectly matches the text clamp approximation */
+  height: clamp(32px, 4vw, 80px);
+  aspect-ratio: 4/3;
+  object-fit: cover;
+  opacity: 0;
+}

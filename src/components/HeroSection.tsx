@@ -134,7 +134,8 @@ function buildStripPairs(start: number, count = 6): PairEntry[] {
 const EXTRA_STEPS = 2;
 
 // Products end at 500vh (2 + 2*1.5). About panel runs 500–700vh. Buffer 80vh → 780vh total.
-const TOTAL_VH = 780;
+// Increased to 880 to allow the about panel to breathe before the services section slides up.
+const TOTAL_VH = 850;
 
 export function HeroSection() {
   // ── DOM refs ──────────────────────────────────────────────────────────────
