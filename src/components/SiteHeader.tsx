@@ -30,9 +30,9 @@ export function SiteHeader() {
   // Approximate active name
   let activeName = "HOME";
   if (pathname.includes("about")) activeName = "ABOUT";
-  else if (pathname.includes("products")) activeName = "COLLECTION";
+  else if (pathname.includes("products")) activeName = "PRODUCTS";
   else if (pathname.includes("projects")) activeName = "PROJECTS";
-  else if (pathname.includes("services")) activeName = "APPROACH";
+  else if (pathname.includes("services")) activeName = "SERVICES";
   else if (pathname.includes("contact")) activeName = "CONTACT";
   else if (pathname.includes("gallery")) activeName = "GALLERY";
 
@@ -97,9 +97,9 @@ export function SiteHeader() {
                 <nav className="flex flex-col gap-3 text-[28px] leading-tight font-medium tracking-tight">
                   <AnimatedLink to="/" onClick={() => setIsOpen(false)}>Home</AnimatedLink>
                   <AnimatedLink to="/about" onClick={() => setIsOpen(false)}>About</AnimatedLink>
-                  <AnimatedLink to="/products" onClick={() => setIsOpen(false)}>Collection</AnimatedLink>
+                  <AnimatedLink to="/products" onClick={() => setIsOpen(false)}>Products</AnimatedLink>
                   <AnimatedLink to="/projects" onClick={() => setIsOpen(false)}>Projects</AnimatedLink>
-                  <AnimatedLink to="/services" onClick={() => setIsOpen(false)}>Approach</AnimatedLink>
+                  <AnimatedLink to="/services" onClick={() => setIsOpen(false)}>Services</AnimatedLink>
                   <AnimatedLink to="/contact" onClick={() => setIsOpen(false)}>Contact</AnimatedLink>
                 </nav>
               </div>

@@ -640,42 +640,14 @@
   overflow: hidden;
 }
 
-/* ── Glassy Cursor Lens (Distortion Effect) ─────────────────────────── */
-.about-lens {
+/* ── WebGL fluid displacement canvas ───────────────────────────────────── */
+.about-gl-canvas {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 140px;
-  height: 140px;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
   pointer-events: none;
-  opacity: 0;
-  transform: scale(0.85);
-  transform-origin: center;
-  will-change: transform, opacity;
-  z-index: 50;
-  /* Visual glass styling */
-  border-radius: 50%;
-  backdrop-filter: url(#hero-glass-distort) blur(4px) brightness(1.1) saturate(1.2);
-  -webkit-backdrop-filter: blur(4px) brightness(1.1) saturate(1.2);
-  /* Fallback */
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  box-shadow:
-    0 0 0 1px rgba(10, 124, 63, 0.15),
-    0 12px 40px rgba(0, 0, 0, 0.2),
-    inset 0 2px 6px rgba(255, 255, 255, 0.6);
-  overflow: hidden;
-}
-
-.about-lens-ring {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.05) 50%, transparent 75%);
-}
-
-.about-lens-highlight {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  box-shadow: inset 0 20px 20px -20px rgba(255, 255, 255, 0.8);
+  z-index: 1;
+  will-change: clip-path;
 }

@@ -1,10 +1,79 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import logoSvg from "@/assets/logo/Sorana-Logo.svg";
 import aboutVideoSrc from "@/assets/video-about/220941_medium.mp4";
+
+// ── WebGL shaders for fluid cursor displacement ──────────────────────────────
+const VERT_SRC = `
+  attribute vec2 aPos;
+  varying vec2 vUv;
+  void main() {
+    vUv = aPos * 0.5 + 0.5;
+    gl_Position = vec4(aPos, 0.0, 1.0);
+  }
+`;
+
+// Pass 1 – update displacement texture (ping-pong)
+const DISP_FRAG_SRC = `
+  precision highp float;
+  uniform sampler2D uPrev;
+  uniform vec2 uMouse;
+  uniform vec2 uVelocity;
+  uniform float uAspect;
+  varying vec2 vUv;
+
+  void main() {
+    // Decode previous displacement from [0,1] -> [-1,1]
+    vec2 prev = texture2D(uPrev, vUv).rg * 2.0 - 1.0;
+
+    // Decay toward zero
+    prev *= 0.955;
+
+    // Cursor brush: Gaussian falloff, aspect-corrected
+    vec2 delta = vec2((vUv.x - uMouse.x) * uAspect, vUv.y - uMouse.y);
+    float dist  = length(delta);
+    float brush = exp(-dist * dist / 0.0055);
+
+    // Paint velocity into displacement
+    prev += uVelocity * brush * 4.5;
+    prev  = clamp(prev, -1.0, 1.0);
+
+    // Encode [-1,1] -> [0,1]
+    gl_FragColor = vec4(prev * 0.5 + 0.5, 0.0, 1.0);
+  }
+`;
+
+// Pass 2 – render video through displacement
+const RENDER_FRAG_SRC = `
+  precision highp float;
+  uniform sampler2D uVideo;
+  uniform sampler2D uDisp;
+  uniform float uAspect;
+  varying vec2 vUv;
+
+  void main() {
+    // Decode displacement
+    vec2 disp = texture2D(uDisp, vUv).rg * 2.0 - 1.0;
+
+    // Correct for aspect ratio so warp is isotropic
+    disp.x /= uAspect;
+
+    float dispLen = length(disp);
+
+    // Chromatic aberration: R/G/B channels offset slightly
+    float ca = dispLen * 0.007;
+    vec2  uv  = vUv + disp * 0.055;
+
+    float r = texture2D(uVideo, uv + vec2(ca,  0.0)).r;
+    float g = texture2D(uVideo, uv              ).g;
+    float b = texture2D(uVideo, uv - vec2(ca,  0.0)).b;
+
+    gl_FragColor = vec4(r, g, b, 1.0);
+  }
+`;
 
 // --- Image imports: images from the same folder are always kept as a pair ---
 import tempered1   from "@/assets/glasses/tempered/pexels-joerg-hartmann-626385254-20677918.jpg";
@@ -86,13 +155,30 @@ export function HeroSection() {
   const aboutVideoRef        = useRef<HTMLVideoElement>(null);
   const aboutContentRef      = useRef<HTMLDivElement>(null);
   const aboutVideoWrapperRef = useRef<HTMLDivElement>(null);
-  const lensRef              = useRef<HTMLDivElement>(null);
+  const glCanvasRef          = useRef<HTMLCanvasElement>(null);
+
+  // WebGL state refs
+  const glRef        = useRef<WebGLRenderingContext | null>(null);
+  const glStateRef   = useRef<{
+    dispProg:    WebGLProgram;
+    renderProg:  WebGLProgram;
+    fbo:         [WebGLFramebuffer, WebGLFramebuffer];
+    tex:         [WebGLTexture, WebGLTexture];
+    videoTex:    WebGLTexture;
+    quad:        WebGLBuffer;
+    ping:        number; // 0 or 1 — which FBO is the "current" target
+    mouse:       [number, number];
+    prevMouse:   [number, number];
+    velocity:    [number, number];
+    rafId:       number;
+    active:      boolean;
+  } | null>(null);
 
   // Scroll-state tracking
   const hasFoundCenterRef     = useRef(false);
   const activePairRef         = useRef<HTMLElement | null>(null);
   const startWrapperOffsetRef = useRef({ x: 0, y: 0 });
-  const timerRef              = useRef<ReturnType<typeof setTimeout>>();
+  const timerRef              = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const initialPairIdxRef     = useRef(0);
   const extraPairsRef         = useRef<PairEntry[]>([]);
 
@@ -395,10 +481,10 @@ export function HeroSection() {
             aboutPanelRef.current.style.clipPath = `inset(0 ${100 - p * 100}% 0 0)`;
             aboutPanelRef.current.style.pointerEvents = p > 0.5 ? 'auto' : 'none';
           }
-          // Video wipes in from RIGHT: clip left edge 100%→0%
-          if (aboutVideoRef.current) {
-            aboutVideoRef.current.style.clipPath = `inset(0 0 0 ${100 - p * 100}%)`;
-          }
+          // Canvas (and hidden video) wipe in from RIGHT: clip left edge 100%→0%
+          const clipVal = `inset(0 0 0 ${100 - p * 100}%)`;
+          if (aboutVideoRef.current)  aboutVideoRef.current.style.clipPath  = clipVal;
+          if (glCanvasRef.current)    glCanvasRef.current.style.clipPath    = clipVal;
           // Enable cursor interactions on video wrapper when visible
           if (aboutVideoWrapperRef.current) {
             aboutVideoWrapperRef.current.style.pointerEvents = p > 0.1 ? 'auto' : 'none';
@@ -414,46 +500,211 @@ export function HeroSection() {
 
     }, scrollContainerRef);
 
-    // ── Glass lens cursor effect (outside GSAP context) ────────────────────
-    const LENS_R = 70;
-    const rightWrapper = aboutVideoWrapperRef.current;
-    const lensEl = lensRef.current;
-
-    const handlePointerMove = (e: PointerEvent) => {
-      if (!lensEl) return;
-      const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-      gsap.set(lensEl, {
-        x: e.clientX - rect.left - LENS_R,
-        y: e.clientY - rect.top - LENS_R,
-        autoAlpha: 1,
-        scale: 1,
-      });
-    };
-    const handlePointerLeave = () => {
-      if (!lensEl) return;
-      gsap.to(lensEl, { autoAlpha: 0, scale: 0.85, duration: 0.35, ease: 'power2.out' });
-    };
-    const handlePointerEnter = () => {
-      if (!lensEl) return;
-      gsap.to(lensEl, { scale: 1, duration: 0.4, ease: 'back.out(1.4)' });
-    };
-
-    if (rightWrapper) {
-      rightWrapper.addEventListener('pointermove', handlePointerMove as EventListener);
-      rightWrapper.addEventListener('pointerleave', handlePointerLeave);
-      rightWrapper.addEventListener('pointerenter', handlePointerEnter);
-    }
-
     return () => {
       clearTimeout(timerRef.current);
-      if (rightWrapper) {
-        rightWrapper.removeEventListener('pointermove', handlePointerMove as EventListener);
-        rightWrapper.removeEventListener('pointerleave', handlePointerLeave);
-        rightWrapper.removeEventListener('pointerenter', handlePointerEnter);
-      }
       ctx.revert();
     };
   }, []);
+
+  // ── WebGL fluid displacement effect ─────────────────────────────────────
+  const initWebGL = useCallback(() => {
+    const canvas  = glCanvasRef.current;
+    const video   = aboutVideoRef.current;
+    if (!canvas || !video) return;
+
+    const gl = canvas.getContext('webgl', {
+      alpha: false,
+      antialias: false,
+      premultipliedAlpha: false,
+    }) as WebGLRenderingContext | null;
+    if (!gl) return;
+    glRef.current = gl;
+
+    // ── helpers ──
+    const mkShader = (type: number, src: string) => {
+      const s = gl.createShader(type)!;
+      gl.shaderSource(s, src);
+      gl.compileShader(s);
+      return s;
+    };
+    const mkProg = (vert: string, frag: string) => {
+      const p = gl.createProgram()!;
+      gl.attachShader(p, mkShader(gl.VERTEX_SHADER,   vert));
+      gl.attachShader(p, mkShader(gl.FRAGMENT_SHADER, frag));
+      gl.linkProgram(p);
+      return p;
+    };
+    const mkTex = (w: number, h: number, data?: Uint8Array) => {
+      const t = gl.createTexture()!;
+      gl.bindTexture(gl.TEXTURE_2D, t);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, w, h, 0, gl.RGBA, gl.UNSIGNED_BYTE, data ?? null);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+      return t;
+    };
+    const mkFbo = (tex: WebGLTexture) => {
+      const f = gl.createFramebuffer()!;
+      gl.bindFramebuffer(gl.FRAMEBUFFER, f);
+      gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, tex, 0);
+      gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+      return f;
+    };
+
+    const W = canvas.width;
+    const H = canvas.height;
+
+    // Build shaders & programs
+    const dispProg   = mkProg(VERT_SRC, DISP_FRAG_SRC);
+    const renderProg = mkProg(VERT_SRC, RENDER_FRAG_SRC);
+
+    // Neutral displacement: rg = 0.5 (encodes 0 displacement)
+    const neutral = new Uint8Array(W * H * 4);
+    for (let i = 0; i < neutral.length; i += 4) {
+      neutral[i] = 128; neutral[i+1] = 128; neutral[i+2] = 0; neutral[i+3] = 255;
+    }
+
+    const tex0     = mkTex(W, H, neutral);
+    const tex1     = mkTex(W, H, neutral);
+    const videoTex = mkTex(2, 2);
+    const fbo0     = mkFbo(tex0);
+    const fbo1     = mkFbo(tex1);
+
+    // Full-screen quad
+    const quad = gl.createBuffer()!;
+    gl.bindBuffer(gl.ARRAY_BUFFER, quad);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+
+    glStateRef.current = {
+      dispProg, renderProg,
+      fbo:      [fbo0, fbo1],
+      tex:      [tex0, tex1],
+      videoTex,
+      quad,
+      ping:        0,
+      mouse:       [0.5, 0.5],
+      prevMouse:   [0.5, 0.5],
+      velocity:    [0, 0],
+      rafId:       0,
+      active:      false,
+    };
+
+    const draw = () => {
+      const st = glStateRef.current;
+      if (!st || !glRef.current) return;
+      const g = glRef.current;
+
+      // Upload new video frame
+      if (video.readyState >= 2) {
+        g.bindTexture(g.TEXTURE_2D, st.videoTex);
+        g.texImage2D(g.TEXTURE_2D, 0, g.RGBA, g.RGBA, g.UNSIGNED_BYTE, video);
+      }
+
+      // Velocity — smoothly blend toward raw velocity
+      const rawVx = st.mouse[0] - st.prevMouse[0];
+      const rawVy = st.mouse[1] - st.prevMouse[1];
+      st.velocity[0] = st.velocity[0] * 0.82 + rawVx * 0.18 * 60;
+      st.velocity[1] = st.velocity[1] * 0.82 + rawVy * 0.18 * 60;
+      st.prevMouse[0] = st.mouse[0];
+      st.prevMouse[1] = st.mouse[1];
+
+      const aspect = W / H;
+      const pong   = 1 - st.ping;
+
+      // ── Pass 1: update displacement (render into pong) ──
+      g.bindFramebuffer(g.FRAMEBUFFER, st.fbo[pong]);
+      g.viewport(0, 0, W, H);
+      g.useProgram(st.dispProg);
+
+      g.bindBuffer(g.ARRAY_BUFFER, st.quad);
+      const aPos1 = g.getAttribLocation(st.dispProg, 'aPos');
+      g.enableVertexAttribArray(aPos1);
+      g.vertexAttribPointer(aPos1, 2, g.FLOAT, false, 0, 0);
+
+      g.activeTexture(g.TEXTURE0);
+      g.bindTexture(g.TEXTURE_2D, st.tex[st.ping]);
+      g.uniform1i(g.getUniformLocation(st.dispProg, 'uPrev'), 0);
+      g.uniform2f(g.getUniformLocation(st.dispProg, 'uMouse'),    st.mouse[0], 1.0 - st.mouse[1]);
+      g.uniform2f(g.getUniformLocation(st.dispProg, 'uVelocity'), st.velocity[0], -st.velocity[1]);
+      g.uniform1f(g.getUniformLocation(st.dispProg, 'uAspect'),   aspect);
+
+      g.drawArrays(g.TRIANGLE_STRIP, 0, 4);
+
+      // ── Pass 2: render video with displacement ──
+      g.bindFramebuffer(g.FRAMEBUFFER, null);
+      g.viewport(0, 0, W, H);
+      g.useProgram(st.renderProg);
+
+      g.bindBuffer(g.ARRAY_BUFFER, st.quad);
+      const aPos2 = g.getAttribLocation(st.renderProg, 'aPos');
+      g.enableVertexAttribArray(aPos2);
+      g.vertexAttribPointer(aPos2, 2, g.FLOAT, false, 0, 0);
+
+      g.activeTexture(g.TEXTURE0);
+      g.bindTexture(g.TEXTURE_2D, st.videoTex);
+      g.uniform1i(g.getUniformLocation(st.renderProg, 'uVideo'), 0);
+
+      g.activeTexture(g.TEXTURE1);
+      g.bindTexture(g.TEXTURE_2D, st.tex[pong]);
+      g.uniform1i(g.getUniformLocation(st.renderProg, 'uDisp'),  1);
+      g.uniform1f(g.getUniformLocation(st.renderProg, 'uAspect'), aspect);
+
+      g.drawArrays(g.TRIANGLE_STRIP, 0, 4);
+
+      // Swap ping-pong
+      st.ping = pong;
+      st.rafId = requestAnimationFrame(draw);
+    };
+
+    // Kick off the render loop
+    const st = glStateRef.current!;
+    st.rafId = requestAnimationFrame(draw);
+  }, []);
+
+  useEffect(() => {
+    const wrapper = aboutVideoWrapperRef.current;
+    const canvas  = glCanvasRef.current;
+    if (!wrapper || !canvas) return;
+
+    // Match canvas pixel size to wrapper
+    const ro = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const { width, height } = entry.contentRect;
+        canvas.width  = Math.round(width);
+        canvas.height = Math.round(height);
+        // Re-init WebGL when size changes significantly
+        if (glStateRef.current) {
+          cancelAnimationFrame(glStateRef.current.rafId);
+          glStateRef.current = null;
+          glRef.current = null;
+        }
+        initWebGL();
+      }
+    });
+    ro.observe(wrapper);
+
+    // Pointer tracking — store UV coords inside the wrapper
+    const onMove = (e: PointerEvent) => {
+      const st = glStateRef.current;
+      if (!st) return;
+      const rect = wrapper.getBoundingClientRect();
+      st.mouse[0] = (e.clientX - rect.left) / rect.width;
+      st.mouse[1] = (e.clientY - rect.top)  / rect.height;
+    };
+
+    wrapper.addEventListener('pointermove', onMove as EventListener);
+
+    return () => {
+      ro.disconnect();
+      wrapper.removeEventListener('pointermove', onMove as EventListener);
+      if (glStateRef.current) {
+        cancelAnimationFrame(glStateRef.current.rafId);
+        glStateRef.current = null;
+        glRef.current = null;
+      }
+    };
+  }, [initWebGL]);
 
   // ── Render ────────────────────────────────────────────────────────────────
   return (
@@ -516,42 +767,68 @@ export function HeroSection() {
         {/* ── About Panel (Step 4: slides in after all products) ─────────────── */}
         <div style={{ position: 'absolute', inset: 0, zIndex: 20, pointerEvents: 'none' }}>
 
-          {/* LEFT: white glassmorphic panel ─ slides in from left */}
+         {/* LEFT: green glassmorphic panel — slides in from left */}   
           <div
             ref={aboutPanelRef}
             className="about-panel"
-            style={{ clipPath: 'inset(0 100% 0 0)', pointerEvents: 'none' }}
+            style={{
+              clipPath: "inset(0 100% 0 0)",
+              pointerEvents: "none",
+              background: "linear-gradient(145deg, rgba(4, 50, 25, 0.96) 0%, rgba(10, 124, 63, 0.92) 100%)",
+              border: "1px solid rgba(255, 255, 255, 0.10)",
+              boxShadow: "inset 0 1px 0 rgba(255,255,255,0.08), 0 20px 50px rgba(0,0,0,0.25)",
+              color: "#ffffff",
+            }}
           >
             <div
               ref={aboutContentRef}
               className="about-panel-content"
-              style={{ opacity: 0, transform: 'translateY(22px)' }}
+              style={{
+                opacity: 0,
+                transform: "translateY(22px)",
+                color: "#ffffff",
+              }}
             >
-              <p className="about-panel-label">About Us</p>
-              <h2 className="about-panel-title">
+              <p className="about-panel-label" style={{ color: "#f98d4a" }}>
+                About Us
+              </p>
+
+              <h2 className="about-panel-title capitalize" style={{ color: "#ffffff" }}>
                 From auto glass roots to Ethiopia's most advanced processor.
               </h2>
-              <p className="about-panel-body">
+
+              <p className="about-panel-body" style={{ color: "rgba(255,255,255,0.82)" }}>
                 Sorana Glass began with deep technical expertise in automotive glass and has grown
                 into a fully integrated solutions provider — combining over 20 years of industry
                 experience with modern production technology.
               </p>
-              <p className="about-panel-body" style={{ marginTop: '1rem' }}>
-                Today the factory produces up to 2,000 m² per day and supplies contractors, real
+
+              <p className="about-panel-body" style={{ marginTop: "1rem", color: "rgba(255,255,255,0.82)" }}>
+                Today the factory produces up to 2,000 m² per day and supplies contractors, real
                 estate developers, hotels, hospitals and industrial facilities across Ethiopia.
               </p>
-              <Link to="/about" className="about-panel-link">
+
+              <Link
+                to="/about"
+                className="about-panel-link"
+                style={{
+                  color: "#f98d4a",
+                }}
+              >
                 Our Story <ArrowRight size={16} />
               </Link>
             </div>
           </div>
 
-          {/* RIGHT: factory video with glassy cursor lens */}
+
+
+          {/* RIGHT: factory video — rendered through WebGL fluid displacement */}
           <div
             ref={aboutVideoWrapperRef}
             className="about-video-wrapper"
-            style={{ pointerEvents: 'none' }}
+            style={{ pointerEvents: 'none', cursor: 'none' }}
           >
+            {/* Hidden video — only used as WebGL texture source */}
             <video
               ref={aboutVideoRef}
               src={aboutVideoSrc}
@@ -559,13 +836,23 @@ export function HeroSection() {
               loop
               muted
               playsInline
-              style={{ width: '100%', height: '100%', objectFit: 'cover', clipPath: 'inset(0 0 0 100%)' }}
+              crossOrigin="anonymous"
+              style={{
+                position: 'absolute',
+                width: '100%', height: '100%',
+                objectFit: 'cover',
+                clipPath: 'inset(0 0 0 100%)',
+                opacity: 0,
+                pointerEvents: 'none',
+              }}
             />
-            {/* Glassy cursor lens — follows pointer, blurs+brightens video beneath */}
-            <div ref={lensRef} className="about-lens" aria-hidden="true">
-              <div className="about-lens-ring" />
-              <div className="about-lens-highlight" />
-            </div>
+            {/* WebGL canvas replaces the video visually */}
+            <canvas
+              ref={glCanvasRef}
+              className="about-gl-canvas"
+              aria-hidden="true"
+              style={{ clipPath: 'inset(0 0 0 100%)' }}
+            />
           </div>
         </div>
 
@@ -580,13 +867,6 @@ export function HeroSection() {
           aria-hidden="true"
         />
 
-        {/* ── SVG filter for lens distortion ────────────────────────────────── */}
-        <svg style={{ display: 'none' }}>
-          <filter id="hero-glass-distort" x="-20%" y="-20%" width="140%" height="140%">
-            <feTurbulence type="fractalNoise" baseFrequency="0.018 0.022" numOctaves="2" seed="5" result="noise" />
-            <feDisplacementMap in="SourceGraphic" in2="noise" scale="28" xChannelSelector="R" yChannelSelector="G" />
-          </filter>
-        </svg>
 
         {/* ── Hero text content ──────────────────────────────────────────────── */}
         <div
