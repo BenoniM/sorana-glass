@@ -92,6 +92,15 @@ export function ServicesSection() {
         }
       );
 
+      // Pin ServicesSection so IndustriesSection can overlay it
+      ScrollTrigger.create({
+        trigger: sectionRef.current,
+        start: "bottom bottom",
+        end: () => `+=${window.innerHeight}`,
+        pin: true,
+        pinSpacing: false,
+      });
+
       // Stagger list items fade-in
       gsap.fromTo(
         listRef.current ? Array.from(listRef.current.children) : [],

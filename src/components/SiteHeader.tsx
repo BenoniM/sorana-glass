@@ -19,10 +19,23 @@ function AnimatedLink({ to, onClick, children, className = "" }: { to: string; o
 
 export function SiteHeader() {
   const [isOpen, setIsOpen] = useState(false);
+  const [footerActive, setFooterActive] = useState(false);
   const capsuleRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const tlRef = useRef<gsap.core.Timeline | null>(null);
+
+  // Hide the real header once the footer overlay takes over
+  useEffect(() => {
+    const onEnter = () => setFooterActive(true);
+    const onLeave = () => setFooterActive(false);
+    window.addEventListener("footer-overlay-enter", onEnter);
+    window.addEventListener("footer-overlay-leave", onLeave);
+    return () => {
+      window.removeEventListener("footer-overlay-enter", onEnter);
+      window.removeEventListener("footer-overlay-leave", onLeave);
+    };
+  }, []);
   
   const router = useRouterState();
   const pathname = router.location.pathname;
@@ -83,7 +96,8 @@ export function SiteHeader() {
   const toggleMenu = () => setIsOpen((prev) => !prev);
 
   return (
-    <header ref={containerRef} className="fixed top-6 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center w-[320px]">
+    <header ref={containerRef} className="fixed top-6 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center w-[320px]"
+      style={{ opacity: footerActive ? 0 : 1, pointerEvents: footerActive ? "none" : "auto", transition: "opacity 0.3s ease" }}>
       
       {/* DROPDOWN MENU (Behind capsule) */}
       <div 

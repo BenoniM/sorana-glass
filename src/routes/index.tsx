@@ -30,7 +30,7 @@ function Home() {
       <IndustriesSection />
 
       {/* ── CTA ─────────────────────────────────────────────────────────────── */}
-      <section className="mx-auto max-w-7xl px-6 py-24">
+      {/* <section className="mx-auto max-w-7xl px-6 py-24">
         <div className="overflow-hidden rounded-3xl bg-gradient-hero p-10 text-primary-foreground shadow-elegant md:p-16">
           <div className="grid gap-10 md:grid-cols-2 md:items-center">
             <div>
@@ -58,7 +58,7 @@ function Home() {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
     </>
   );
 }

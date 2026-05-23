@@ -115,6 +115,7 @@
     color: var(--color-foreground);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
   }
 
   h1,
@@ -685,7 +686,7 @@
   /* Add negative margin to overlap the pinned hero early */
   margin-top: -100vh;
   z-index: 20;
-  padding: 0 0 10rem;
+  padding: 0;
   overflow: visible;
   /* Transparent so the box looks like it's floating up */
   background: transparent;
@@ -810,13 +811,13 @@
   font-family: var(--font-display);
   font-size: clamp(0.7rem, 1vw, 1rem);
   font-weight: 600;
-  color: var(--muted-foreground);
+  color: rgba(0, 0, 0, 1);
   transition: color 0.3s ease;
 }
 
 .svc-item:hover .svc-item-index,
 .svc-item.is-active .svc-item-index {
-  color: var(--foreground);
+  color: white;
 }
 
 /* ── Inline hover images (left side) ───────────────────────────────────── */
