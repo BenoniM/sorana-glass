@@ -19,21 +19,36 @@ function AnimatedLink({ to, onClick, children, className = "" }: { to: string; o
 
 export function SiteHeader() {
   const [isOpen, setIsOpen] = useState(false);
-  const [footerActive, setFooterActive] = useState(false);
+  const [activeMode, setActiveMode] = useState<'top' | 'bottom'>('top');
+  
+  const isOpenRef = useRef(isOpen);
+  isOpenRef.current = isOpen;
+  const isBottomRef = useRef(false);
+  
   const capsuleRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const tlRef = useRef<gsap.core.Timeline | null>(null);
 
-  // Hide the real header once the footer overlay takes over
   useEffect(() => {
-    const onEnter = () => setFooterActive(true);
-    const onLeave = () => setFooterActive(false);
-    window.addEventListener("footer-overlay-enter", onEnter);
-    window.addEventListener("footer-overlay-leave", onLeave);
+    const handleBottomEnter = () => {
+      isBottomRef.current = true;
+      setActiveMode('bottom');
+      setIsOpen(true);
+    };
+    const handleBottomLeave = () => {
+      isBottomRef.current = false;
+      setIsOpen(false);
+      // If already closed, we can instantly switch to top mode
+      if (!isOpenRef.current) {
+        setActiveMode('top');
+      }
+    };
+    window.addEventListener("footer-bottom-enter", handleBottomEnter);
+    window.addEventListener("footer-bottom-leave", handleBottomLeave);
     return () => {
-      window.removeEventListener("footer-overlay-enter", onEnter);
-      window.removeEventListener("footer-overlay-leave", onLeave);
+      window.removeEventListener("footer-bottom-enter", handleBottomEnter);
+      window.removeEventListener("footer-bottom-leave", handleBottomLeave);
     };
   }, []);
   
@@ -54,8 +69,8 @@ export function SiteHeader() {
     
     // Initial states for the dropdown menu
     gsap.set(menuRef.current, { 
-      clipPath: "inset(0% 0% 100% 0%)",
-      y: -20, // slightly behind the header
+      clipPath: activeMode === 'bottom' ? "inset(100% 0% 0% 0%)" : "inset(0% 0% 100% 0%)",
+      y: activeMode === 'bottom' ? 20 : -20, // slightly behind the header
       display: "none"
     });
 
@@ -63,7 +78,12 @@ export function SiteHeader() {
       // Build a reusable, paused timeline
       const tl = gsap.timeline({ 
         paused: true,
-        defaults: { ease: "power3.inOut", duration: 0.5 }
+        defaults: { ease: "power3.inOut", duration: 0.5 },
+        onReverseComplete: () => {
+          if (!isBottomRef.current) {
+            setActiveMode('top');
+          }
+        }
       });
       
       tl.to(".closed-content", { opacity: 0, duration: 0.2 })
@@ -80,7 +100,7 @@ export function SiteHeader() {
     }, containerRef);
 
     return () => ctx.revert();
-  }, []);
+  }, [activeMode]);
 
   useEffect(() => {
     // Play or reverse the timeline based on state without re-creating it
@@ -93,16 +113,23 @@ export function SiteHeader() {
     }
   }, [isOpen]);
 
-  const toggleMenu = () => setIsOpen((prev) => !prev);
+  const handleCapsuleClick = () => {
+    if (activeMode === 'bottom' && isOpen) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      setIsOpen(false);
+    } else {
+      setIsOpen((prev) => !prev);
+    }
+  };
 
   return (
-    <header ref={containerRef} className="fixed top-6 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center w-[320px]"
-      style={{ opacity: footerActive ? 0 : 1, pointerEvents: footerActive ? "none" : "auto", transition: "opacity 0.3s ease" }}>
+    <header id="site-header" ref={containerRef} className="fixed top-6 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center w-[320px]"
+      style={{ transition: "opacity 0.3s ease" }}>
       
       {/* DROPDOWN MENU (Behind capsule) */}
       <div 
         ref={menuRef}
-        className="absolute top-0 left-0 w-full pt-[64px] -z-10"
+        className={`absolute left-0 w-full -z-10 ${activeMode === 'bottom' ? 'bottom-0 pb-[64px]' : 'top-0 pt-[64px]'}`}
       >
         <div className="w-full bg-gradient-to-br from-[#0A7C3F]/95 to-[#E87732]/95 backdrop-blur-2xl border border-white/20 shadow-2xl rounded-none">
            <div className="p-8 flex flex-col gap-5 text-white justify-between">
@@ -143,7 +170,7 @@ export function SiteHeader() {
       {/* CAPSULE */}
       <div 
         ref={capsuleRef}
-        onClick={toggleMenu}
+        onClick={handleCapsuleClick}
         className="h-12 bg-gradient-to-r from-[#0A7C3F]/60 to-[#E87732]/60 backdrop-blur-2xl border border-white/20 relative mx-auto overflow-hidden shadow-2xl cursor-pointer rounded-none z-20"
         style={{ width: "100%" }}
       >
@@ -163,7 +190,13 @@ export function SiteHeader() {
         {/* Open State Content (Close Button) */}
         <div className="open-content absolute inset-0 flex items-center justify-center opacity-0 invisible">
           <div className="text-white hover:opacity-80 flex items-center justify-center w-full h-full">
-            <X className="w-5 h-5" />
+            {activeMode === 'bottom' ? (
+              <svg viewBox="0 0 24 24" fill="none" width="20" height="20" className="w-5 h-5 text-white">
+                <path d="M12 19V5M12 5L5 12M12 5L19 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            ) : (
+              <X className="w-5 h-5" />
+            )}
           </div>
         </div>
       </div>

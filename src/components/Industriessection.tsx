@@ -115,7 +115,7 @@ export function IndustriesSection() {
       ScrollTrigger.create({
         trigger: sectionRef.current,
         start: 'top top',
-        end: 'bottom bottom',
+        end: 'bottom 200%',
         scrub: 1.2,
         snap: {
           snapTo: (value) => {
@@ -184,7 +184,7 @@ export function IndustriesSection() {
         id="industries-section"
         className="ids-section"
         aria-label="Industries we serve"
-        style={{ height: `${(INDUSTRIES.length - 1) * 100}vh` }}
+        style={{ height: `${INDUSTRIES.length * 100}vh` }}
       >
         <div ref={stickyRef} className="ids-sticky">
 
