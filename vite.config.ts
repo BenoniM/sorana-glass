@@ -1,16 +1,16 @@
-import { defineConfig } from "@lovable.dev/vite-tanstack-config";
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
+import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
-  tanstackStart: {
-    server: { 
-      entry: "server",
-      preset: "vercel" // Tells the underlying Nitro/Vinxi engine to build for Vercel Functions
-    },
+  plugins: [
+    TanStackRouterVite(),
+    react(),
+    tsconfigPaths(),
+  ],
+  server: {
+    port: 5173,
+    strictPort: true,
   },
-  vite: {
-    server: {
-      port: 5173,
-      strictPort: true,
-    }
-  }
 });
