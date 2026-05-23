@@ -5,8 +5,9 @@ import { Link } from "@tanstack/react-router";
 import { services } from "@/lib/site-data";
 import { romanize } from "@/lib/utils";
 
-gsap.registerPlugin(ScrollTrigger);
-
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
 // ── Unsplash images per service (3 each) ───────────────────────────────────
 const SERVICE_IMAGES: Record<string, string[]> = {
   "Glass Cutting": [

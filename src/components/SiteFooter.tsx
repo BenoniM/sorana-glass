@@ -4,8 +4,9 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import logoImg from "@/assets/logo/Sorana-Logo.png";
 
-gsap.registerPlugin(ScrollTrigger);
-
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
 function AnimatedLink({
   to, onClick, children, className = "",
 }: {

@@ -95,8 +95,9 @@ import printed2    from "@/assets/glasses/printed/pexels-macb25-18836811.jpg";
 import sandblasted1 from "@/assets/glasses/sandblasted/hung-nguyen-6vve9yyicyc-unsplash.jpg";
 import sandblasted2 from "@/assets/glasses/sandblasted/pexels-kassiamelox-14303756.jpg";
 
-gsap.registerPlugin(ScrollTrigger);
-
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
 // Must match LoadingScreen total animation time (2200ms stage1 + 1200ms split = 3400ms)
 const LOADING_DURATION = 3400;
 
