@@ -148,7 +148,7 @@ export function SiteHeader() {
               <div className="grid grid-cols-2 gap-4 text-xs mt-6 pt-4 border-t border-white/20">
                 <div className="flex flex-col gap-2">
                   <AnimatedLink to="/" onClick={() => setIsOpen(false)} className="text-xs font-normal">News</AnimatedLink>
-                  <AnimatedLink to="/" onClick={() => setIsOpen(false)} className="text-xs font-normal">Showroom</AnimatedLink>
+                  <AnimatedLink to="/gallery" onClick={() => setIsOpen(false)} className="text-xs font-normal">Gallery</AnimatedLink>
                 </div>
                 <div className="flex flex-col gap-2 text-right">
                   <a href="tel:02081567290" className="hover:opacity-70 transition-opacity">020 8156 7290</a>
