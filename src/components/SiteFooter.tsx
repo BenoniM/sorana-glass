@@ -104,7 +104,7 @@ export function SiteFooter() {
         >
           {/* Background image */}
           <img
-            src="https://images.unsplash.com/photo-1464146072230-91cabc968266?w=1800&q=90&fit=crop"
+            src="https://images.pexels.com/photos/13772063/pexels-photo-13772063.jpeg"
             alt="Glass architecture"
             style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
           />
@@ -122,18 +122,21 @@ export function SiteFooter() {
         {/* SORANA title — inside fixed shell but OUTSIDE slide */}
         <div ref={soranaRef} style={{
           position: "absolute", inset: 0, zIndex: 5,
-          display: "flex", alignItems: "center", justifyContent: "center",
+          display: "flex", alignItems: "flex-end", justifyContent: "space-between",
+          padding: "0 3rem 12vh 3rem", // Pushed lower and to edges
           pointerEvents: "none", userSelect: "none", opacity: 0,
         }}>
-          <span style={{
-            fontFamily: "'Outfit', sans-serif",
-            fontSize: "clamp(4.5rem, 17vw, 15rem)",
-            fontWeight: 700, letterSpacing: "-0.045em", lineHeight: 1,
-            background: "linear-gradient(130deg, rgba(195,255,130,0.80) 0%, rgba(130,240,160,0.70) 40%, rgba(210,255,120,0.76) 75%, rgba(170,255,100,0.63) 100%)",
-            WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
-            WebkitTextStroke: "1px rgba(210,255,160,0.25)",
-            filter: "drop-shadow(0 2px 40px rgba(140,255,120,0.15))",
-          }}>SORANA</span>
+          {["S", "O", "R", "A", "N", "A"].map((letter, i) => (
+            <span key={i} style={{
+              display: "inline-block",
+              fontFamily: "'Outfit', sans-serif",
+              fontSize: "clamp(4rem, 15vw, 14rem)",
+              fontWeight: 700, lineHeight: 0.8,
+              background: "linear-gradient(130deg, rgba(10,124,63,0.85) 0%, rgba(232,119,50,0.85) 100%)",
+              WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
+              color: "transparent",
+            }}>{letter}</span>
+          ))}
         </div>
 
         {/* Bottom bar — inside fixed shell but OUTSIDE slide */}
@@ -141,17 +144,17 @@ export function SiteFooter() {
           position: "absolute", bottom: 0, left: 0, right: 0, zIndex: 6, opacity: 0,
         }}>
           <div>
-            <div style={{ maxWidth: 1280, margin: "0 auto", display: "flex", alignItems: "center", padding: "1rem 1.5rem", gap: "1rem" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "1.25rem", flex: 1, flexWrap: "wrap", fontSize: "0.6875rem", color: "rgba(255,255,255,0.48)" }}>
+            <div style={{ width: "100%", margin: "0 auto", display: "flex", alignItems: "center", padding: "1.5rem 3rem", gap: "1rem" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "1.5rem", flex: 1, flexWrap: "wrap", fontSize: "0.85rem", color: "rgba(255,255,255,0.6)" }}>
                 <span>©{new Date().getFullYear()}, Sorana Glass</span>
                 {["Instagram", "LinkedIn", "YouTube"].map(s => (
-                  <a key={s} href="#" className="hover:text-white transition-colors" style={{ color: "rgba(255,255,255,0.48)" }}>{s}</a>
+                  <a key={s} href="#" className="hover:text-white transition-colors" style={{ color: "rgba(255,255,255,0.6)" }}>{s}</a>
                 ))}
               </div>
-              <div style={{ display: "flex", alignItems: "center", gap: "1.25rem", flex: 1, justifyContent: "flex-end", flexWrap: "wrap", fontSize: "0.6875rem", color: "rgba(255,255,255,0.48)" }}>
-                <Link to="/" className="hover:text-white transition-colors" style={{ color: "rgba(255,255,255,0.48)" }}>Privacy policy</Link>
-                <Link to="/" className="hover:text-white transition-colors" style={{ color: "rgba(255,255,255,0.48)" }}>Terms & conditions</Link>
-                <span style={{ color: "rgba(255,255,255,0.22)" }} className="hidden lg:inline">Crafted with precision</span>
+              <div style={{ display: "flex", alignItems: "center", gap: "1.5rem", flex: 1, justifyContent: "flex-end", flexWrap: "wrap", fontSize: "0.85rem", color: "rgba(255,255,255,0.6)" }}>
+                <Link to="/" className="hover:text-white transition-colors" style={{ color: "rgba(255,255,255,0.6)" }}>Privacy policy</Link>
+                <Link to="/" className="hover:text-white transition-colors" style={{ color: "rgba(255,255,255,0.6)" }}>Terms & conditions</Link>
+                <span style={{ color: "rgba(255,255,255,0.4)" }} className="hidden lg:inline">Crafted with precision</span>
               </div>
             </div>
           </div>
