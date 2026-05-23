@@ -2,18 +2,12 @@
   "buildCommand": "npm run build",
   "framework": null,
   "rewrites": [
-    {
-      "source": "/assets/(.*)",
-      "destination": "/assets/$1"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/api/server"
-    }
+    { "source": "/(.*)", "destination": "/api/server" }
   ],
   "functions": {
     "api/server.js": {
-      "includeFiles": "dist/**"
+      "includeFiles": "dist/**",
+      "memory": 1024
     }
   }
 }

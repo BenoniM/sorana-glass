@@ -60,11 +60,13 @@ async function normalizeCatastrophicSsrResponse(response: Response): Promise<Res
     return response;
   }
 
-  console.error(consumeLastCapturedError() ?? new Error(`h3 swallowed SSR error: ${body}`));
+  const captured = consumeLastCapturedError();
+  if (captured) console.error(captured);
+  else console.error(new Error(`h3 swallowed SSR error: ${body}`));
   return brandedErrorResponse();
 }
 
-// Vercel Node.js runtime — no `env` / `ctx` Cloudflare Worker args
+// Node.js / Vercel compatible — no Cloudflare Worker `env` / `ctx` args
 export default {
   async fetch(request: Request) {
     try {

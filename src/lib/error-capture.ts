@@ -8,11 +8,17 @@ function record(error: unknown) {
   lastCapturedError = { error, at: Date.now() };
 }
 
+// globalThis.addEventListener is only available in browser/Cloudflare Workers,
+// not in Node.js — guard before calling it.
 if (typeof globalThis.addEventListener === "function") {
   globalThis.addEventListener("error", (event) => record((event as ErrorEvent).error ?? event));
   globalThis.addEventListener("unhandledrejection", (event) =>
     record((event as PromiseRejectionEvent).reason),
   );
+} else if (typeof process !== "undefined") {
+  // Node.js fallback
+  process.on("uncaughtException", (error) => record(error));
+  process.on("unhandledRejection", (reason) => record(reason));
 }
 
 export function consumeLastCapturedError(): unknown {
