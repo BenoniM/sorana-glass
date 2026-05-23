@@ -11,11 +11,9 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
-  HeadContent,
-  Scripts,
 } from "@tanstack/react-router";
 
-import appCss from "../styles.css?url";
+import "../styles.css";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { LoadingScreen } from "@/components/LoadingScreen";
@@ -65,35 +63,12 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 }
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
-  head: () => ({
-    meta: [
-      { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Sorana Glass" },
-      { name: "description", content: "Sorana Glass is one of Ethiopia's leading glass processing factories — tempered, laminated, architectural and automotive glass with over 20 years of expertise." },
-      { name: "author", content: "Sorana Glass" },
-      { property: "og:title", content: "Sorana Glass — Advanced Glass Processing in Ethiopia" },
-      { property: "og:description", content: "Tempered, laminated, architectural and automotive glass solutions from Addis Ababa." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-    links: [{ rel: "stylesheet", href: appCss }, { rel: "icon", href: "src/assets/logo/Sorana-Logo.png" }
-    ],
-  }),
-  shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
   errorComponent: ErrorComponent,
 });
 
-function RootShell({ children }: { children: React.ReactNode }) {
-  return (
-    <html lang="en">
-      <head><HeadContent /></head>
-      <body>{children}<Scripts /></body>
-    </html>
-  );
-}
+
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
