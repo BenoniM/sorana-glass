@@ -160,11 +160,11 @@ export function ServicesSection() {
 
         {/* ── Split Section Header ────────────────────────────────────────── */}
         <div className="svc-header-mcalpine">
-          <h2 className="svc-title-left text-[#0A7C3F]">Services</h2>
+          <h2 className="svc-title-left text-white">Services</h2>
           <div className="svc-header-img-wrapper">
              <img src="https://images.pexels.com/photos/443383/pexels-photo-443383.jpeg" alt="Factory" className="svc-header-img" />
           </div>
-          <h2 className="svc-title-right text-[#E47A38]">Catalogue</h2>
+          <h2 className="svc-title-right text-white">Catalogue</h2>
         </div>
 
         {/* ── Vertical centered service list ───────────────────────────────── */}
