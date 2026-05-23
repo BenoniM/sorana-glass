@@ -505,8 +505,8 @@
 .hero-info-card-layer {
   position: absolute;
   inset: 0;
-  backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
   border-top: 1px solid rgba(232, 119, 50, 0.35);
   border-bottom: 1px solid rgba(232, 119, 50, 0.35);
   border-left: 1px solid rgba(255, 255, 255, 0.08);
@@ -601,8 +601,8 @@
   width: 50%;
   height: 100%;
   background: linear-gradient(160deg, rgba(255, 255, 255, 0.92) 0%, rgba(235, 245, 238, 0.88) 100%);
-  backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
+  backdrop-filter: blur(24px);
   border-right: 1px solid rgba(10, 124, 63, 0.15);
   display: flex;
   align-items: center;
@@ -706,8 +706,8 @@
     rgba(255, 255, 255, 0.75) 70%,
     rgba(250, 131, 58, 0.65) 100%
   );
-  backdrop-filter: blur(32px);
   -webkit-backdrop-filter: blur(32px);
+  backdrop-filter: blur(32px);
   border-top: 1px solid rgba(255, 255, 255, 0.5);
   box-shadow: 0 -20px 60px rgba(0,0,0,0.10);
   padding-bottom: 8rem;

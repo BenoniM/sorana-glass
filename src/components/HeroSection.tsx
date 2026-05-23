@@ -838,7 +838,6 @@ export function HeroSection() {
               loop
               muted
               playsInline
-              crossOrigin="anonymous"
               style={{
                 position: 'absolute',
                 width: '100%', height: '100%',

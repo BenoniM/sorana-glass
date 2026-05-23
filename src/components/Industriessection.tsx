@@ -373,8 +373,8 @@ export function IndustriesSection() {
           width: 260px;
           padding: 0.01rem 1.25rem;
           background: rgba(255, 255, 255, 0.08);
-          backdrop-filter: blur(12px);
           -webkit-backdrop-filter: blur(12px);
+          backdrop-filter: blur(12px);
           border: 1px solid rgba(255, 255, 255, 0.15);
           border-radius: 10px;
           display: flex;
