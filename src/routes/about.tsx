@@ -2,6 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Target, Eye, Sparkles } from "lucide-react";
 import factoryImg from "@/assets/factory.jpg";
 
+import { StorySection } from "@/components/StorySection";
+
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
@@ -55,45 +57,15 @@ function About() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-6 py-24">
-        <div className="grid gap-12 md:grid-cols-2 md:items-center">
-          <img src={factoryImg} alt="Sorana production line" className="rounded-2xl shadow-elegant" loading="lazy" width={1600} height={1024} />
-          <div>
-            <h2 className="font-display text-3xl font-bold">Our story</h2>
-            <div className="mt-6 space-y-4 text-muted-foreground">
-              <p>
-                Established in 2017 under its current legal structure, Sorana builds on a long
-                operational history that began under a sister company focused on auto glass services.
-              </p>
-              <p>
-                That automotive heritage shaped a culture of precision and accountability. As demand
-                for architectural glass grew across Ethiopia, Sorana expanded into full-scale
-                processing — investing in 4 advanced tempering furnaces, including a recent upgrade
-                from leading global supplier North Glass.
-              </p>
-              <p>
-                Today the factory produces up to 2,000 m² per day and supplies contractors, real
-                estate developers, car assembly companies, hotels, hospitals, museums and
-                industrial facilities across the country.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
+      <StorySection />
 
       <section className="bg-surface py-24">
-        <div className="mx-auto grid max-w-7xl gap-8 px-6 md:grid-cols-3">
-          {[
-            { icon: Eye, title: "Vision", body: "To become one of the leading and most advanced glass processing companies in Africa — recognized for quality, innovation and reliability." },
-            { icon: Target, title: "Mission", body: "To provide high-quality glass products and services to construction and automotive industries through efficient production, reliable delivery and customer-focused solutions." },
-            { icon: Sparkles, title: "Core values", body: values.join(" · ") },
-          ].map((c) => (
-            <div key={c.title} className="rounded-2xl border border-border bg-card p-8 shadow-card">
-              <c.icon className="h-7 w-7 text-accent" />
-              <h3 className="mt-4 font-display text-xl font-semibold">{c.title}</h3>
-              <p className="mt-3 text-sm text-muted-foreground">{c.body}</p>
-            </div>
-          ))}
+        <div className="mx-auto max-w-3xl px-6 text-center">
+          <div className="rounded-2xl border border-border bg-card p-12 shadow-card flex flex-col items-center">
+            <Sparkles className="h-10 w-10 text-accent" />
+            <h3 className="mt-6 font-display text-2xl font-semibold">Core values</h3>
+            <p className="mt-4 text-muted-foreground text-lg">{values.join("  ·  ")}</p>
+          </div>
         </div>
       </section>
 
