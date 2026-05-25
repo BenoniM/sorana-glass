@@ -107,7 +107,7 @@ export function CoreValuesSection() {
                     <h3 className="font-display text-5xl md:text-6xl font-medium tracking-tight text-foreground">
                       {val.title}
                     </h3>
-                    <div className="w-16 h-20 md:w-20 md:h-24 overflow-hidden rounded-md transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] group-hover:w-32 md:group-hover:w-40 shadow-xl">
+                    <div className="w-16 h-20 md:w-20 md:h-24 overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] group-hover:w-32 md:group-hover:w-40 shadow-xl">
                       <img src={val.image} alt={val.title} className="w-full h-full object-cover scale-110 group-hover:scale-100 transition-transform duration-700" />
                     </div>
                     <span className={`font-display text-4xl md:text-5xl font-light ${val.colorN} opacity-80`}>
@@ -120,7 +120,7 @@ export function CoreValuesSection() {
                 {val.layout === "img-text" && (
                   <>
                     <Icon className={`w-8 h-8 ${val.colorA} transition-transform group-hover:scale-110`} strokeWidth={2} />
-                    <div className="w-16 h-20 md:w-20 md:h-24 overflow-hidden rounded-md transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] group-hover:w-32 md:group-hover:w-40 shadow-xl">
+                    <div className="w-16 h-20 md:w-20 md:h-24 overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] group-hover:w-32 md:group-hover:w-40 shadow-xl">
                       <img src={val.image} alt={val.title} className="w-full h-full object-cover scale-110 group-hover:scale-100 transition-transform duration-700" />
                     </div>
                     <h3 className="font-display text-5xl md:text-6xl font-medium tracking-tight text-foreground">
@@ -142,7 +142,7 @@ export function CoreValuesSection() {
                     <span className={`font-display text-4xl md:text-5xl font-light ${val.colorN} opacity-80`}>
                       ({val.id})
                     </span>
-                    <div className="w-16 h-20 md:w-20 md:h-24 overflow-hidden rounded-md transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] group-hover:w-32 md:group-hover:w-40 shadow-xl">
+                    <div className="w-16 h-20 md:w-20 md:h-24 overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] group-hover:w-32 md:group-hover:w-40 shadow-xl">
                       <img src={val.image} alt={val.title} className="w-full h-full object-cover scale-110 group-hover:scale-100 transition-transform duration-700" />
                     </div>
                   </>
@@ -151,7 +151,7 @@ export function CoreValuesSection() {
                 {/* LAYOUT 4: Image -> Icon -> Text -> Num */}
                 {val.layout === "img-icon-text" && (
                   <>
-                    <div className="w-16 h-20 md:w-20 md:h-24 overflow-hidden rounded-md transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] group-hover:w-32 md:group-hover:w-40 shadow-xl">
+                    <div className="w-16 h-20 md:w-20 md:h-24 overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] group-hover:w-32 md:group-hover:w-40 shadow-xl">
                       <img src={val.image} alt={val.title} className="w-full h-full object-cover scale-110 group-hover:scale-100 transition-transform duration-700" />
                     </div>
                     <Icon className={`w-8 h-8 ${val.colorA} transition-transform group-hover:scale-110`} strokeWidth={2} />

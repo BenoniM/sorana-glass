@@ -1,10 +1,17 @@
+import { useRef, useEffect } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { Target, Eye, Sparkles } from "lucide-react";
 import factoryImg from "@/assets/factory.jpg";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 import { StorySection } from "@/components/StorySection";
 import { CoreValuesSection, LeafyBranchSVG } from "@/components/CoreValuesSection";
 import { LeadershipSection } from "@/components/LeadershipSection";
+
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 export const Route = createFileRoute("/about")({
   head: () => ({
@@ -19,6 +26,25 @@ export const Route = createFileRoute("/about")({
 });
 
 function About() {
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!wrapperRef.current || !contentRef.current) return;
+    
+    const ctx = gsap.context(() => {
+      ScrollTrigger.create({
+        trigger: wrapperRef.current,
+        start: "bottom bottom", // When the bottom of the wrapper hits the bottom of the viewport
+        end: "+=100%", // Pin it for the duration of 1 viewport height (for the footer reveal)
+        pin: contentRef.current,
+        pinSpacing: true, // Automatically adds the exact padding needed
+      });
+    }, wrapperRef);
+
+    return () => ctx.revert();
+  }, []);
+
   return (
     <>
       <section className="relative overflow-hidden py-16 flex flex-col items-center justify-center text-center">
@@ -52,20 +78,22 @@ function About() {
 
       <StorySection />
 
-      <div className="relative overflow-hidden bg-surface min-h-screen">
-        {/* Background Layer: Frosted Glass + Leafy SVGs */}
-        <div className="absolute inset-0 z-0 bg-[#EFEFEA]">
-          {/* Colorful gradient blobs */}
-          <div className="absolute top-0 left-1/4 w-[50vw] h-[50vw] max-w-[800px] max-h-[800px] bg-[#0A7C3F]/30 rounded-full blur-[100px] -translate-y-1/3 -translate-x-1/2" />
-          <div className="absolute bottom-0 right-1/4 w-[50vw] h-[50vw] max-w-[800px] max-h-[800px] bg-[#E87732]/20 rounded-full blur-[100px] translate-y-1/3 translate-x-1/2" />
-          {/* Leafy SVGs */}
-          <LeafyBranchSVG />
-          {/* Heavy Frosted Glass Overlay */}
-          <div className="absolute inset-0 bg-white/40 backdrop-blur-[60px]" />
-        </div>
+      <div ref={wrapperRef} className="relative">
+        <div ref={contentRef} className="relative overflow-hidden bg-surface min-h-screen">
+          {/* Background Layer: Frosted Glass + Leafy SVGs */}
+          <div className="absolute inset-0 z-0 bg-[#EFEFEA]">
+            {/* Colorful gradient blobs */}
+            <div className="absolute top-0 left-1/4 w-[50vw] h-[50vw] max-w-[800px] max-h-[800px] bg-[#0A7C3F]/30 rounded-full blur-[100px] -translate-y-1/3 -translate-x-1/2" />
+            <div className="absolute bottom-0 right-1/4 w-[50vw] h-[50vw] max-w-[800px] max-h-[800px] bg-[#E87732]/20 rounded-full blur-[100px] translate-y-1/3 translate-x-1/2" />
+            {/* Leafy SVGs */}
+            <LeafyBranchSVG />
+            {/* Heavy Frosted Glass Overlay */}
+            <div className="absolute inset-0 bg-white/40 backdrop-blur-[60px]" />
+          </div>
 
-        <CoreValuesSection />
-        <LeadershipSection />
+          <CoreValuesSection />
+          <LeadershipSection />
+        </div>
       </div>
     </>
   );
