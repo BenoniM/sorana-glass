@@ -1,9 +1,9 @@
 import { useRef, useEffect } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { industries } from "@/lib/site-data";
-import { Building2 } from "lucide-react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+import { ProjectsIndustriesSection } from "@/components/ProjectsIndustriesSection";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -82,18 +82,7 @@ function Projects() {
           </div>
         </section>
 
-        <section className="mx-auto max-w-7xl px-6 py-24">
-          <h2 className="font-display text-3xl font-bold">Industries we serve</h2>
-          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {industries.map((i) => (
-              <div key={i.name} className="rounded-2xl border border-border bg-card p-6 shadow-card">
-                <Building2 className="h-6 w-6 text-accent" />
-                <h3 className="mt-4 font-display text-lg font-semibold">{i.name}</h3>
-                <p className="mt-2 text-sm text-muted-foreground">{i.desc}</p>
-              </div>
-            ))}
-          </div>
-        </section>
+        <ProjectsIndustriesSection />
 
         <section className="bg-surface py-24">
           <div className="mx-auto max-w-7xl px-6">
