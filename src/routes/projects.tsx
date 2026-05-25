@@ -28,15 +28,31 @@ const projectTypes = [
 function Projects() {
   return (
     <>
-      <section className="border-b border-border bg-surface">
-        <div className="mx-auto max-w-7xl px-6 py-24">
-          <p className="text-sm font-semibold uppercase tracking-widest text-accent">Projects</p>
-          <h1 className="mt-3 max-w-3xl font-display text-5xl font-bold text-balance md:text-6xl">
+      <section className="relative overflow-hidden py-16 flex flex-col items-center justify-center text-center">
+        {/* Greenish/orangeish glassy background */}
+        <div className="absolute inset-0 z-0">
+          <div className="absolute top-0 left-1/4 w-[50vw] h-[50vw] max-w-[800px] max-h-[800px] bg-[#0A7C3F]/50 rounded-full blur-[80px] -translate-y-1/3 -translate-x-2/3" />
+          <div className="absolute bottom-0 right-1/4 w-[50vw] h-[50vw] max-w-[800px] max-h-[800px] bg-[#E87732]/40 rounded-full blur-[80px] translate-y-1/3 translate-x-2/3" />
+          <div className="absolute inset-0 bg-background/30 backdrop-blur-[30px]" />
+        </div>
+
+        <div className="relative z-10 h-full w-full max-w-6xl px-6 flex flex-col items-center">
+          <h1 className="mt-10 mb-8 max-w-3xl capitalize font-display text-3xl font-semibold leading-tight">
             Trusted across Ethiopia's most demanding sectors.
           </h1>
-          <p className="mt-6 max-w-2xl text-lg text-muted-foreground">
-            Sorana works alongside contractors, developers and manufacturers — delivering consistent
-            quality on both large-scale and urgent projects.
+
+          <div className="relative p-2 md:p-3 bg-[#0A7C3F]/30 backdrop-blur-md border border-white/20 shadow-2xl mb-10 w-5xl max-w-5xl mx-auto">
+            <div className="p-1 rounded-sm">
+              <img 
+                src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80" 
+                alt="Glass Projects" 
+                className="w-full aspect-[42/9] object-cover opacity-95" 
+              />
+            </div>
+          </div>
+
+          <p className="mt-3 max-w-5xl capitalize font-display text-lg font-light text-balance">
+            Sorana works alongside contractors, developers and manufacturers — delivering consistent quality on both large-scale and urgent projects.
           </p>
         </div>
       </section>

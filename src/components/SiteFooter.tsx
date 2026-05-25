@@ -162,16 +162,16 @@ export function SiteFooter() {
         }}>
           <div>
             <div style={{ width: "100%", margin: "0 auto", display: "flex", alignItems: "center", padding: "1.5rem 3rem", gap: "1rem" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "1.5rem", flex: 1, flexWrap: "wrap", fontSize: "0.85rem", color: "rgba(255,255,255,0.6)" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "1.5rem", flex: 1, flexWrap: "wrap", fontSize: "0.85rem", color: "rgba(255,255,255,1)" }}>
                 <span>©{new Date().getFullYear()}, Sorana Glass</span>
                 {["Instagram", "LinkedIn", "YouTube"].map(s => (
-                  <a key={s} href="#" className="hover:text-white transition-colors" style={{ color: "rgba(255,255,255,0.6)" }}>{s}</a>
+                  <a key={s} href="#" className="hover:text-white transition-colors" style={{ color: "rgba(255,255,255,1)" }}>{s}</a>
                 ))}
               </div>
-              <div style={{ display: "flex", alignItems: "center", gap: "1.5rem", flex: 1, justifyContent: "flex-end", flexWrap: "wrap", fontSize: "0.85rem", color: "rgba(255,255,255,0.6)" }}>
-                <Link to="/" className="hover:text-white transition-colors" style={{ color: "rgba(255,255,255,0.6)" }}>Privacy policy</Link>
-                <Link to="/" className="hover:text-white transition-colors" style={{ color: "rgba(255,255,255,0.6)" }}>Terms & conditions</Link>
-                <span style={{ color: "rgba(255,255,255,0.4)" }} className="hidden lg:inline">Crafted with precision</span>
+              <div style={{ display: "flex", alignItems: "center", gap: "1.5rem", flex: 1, justifyContent: "flex-end", flexWrap: "wrap", fontSize: "0.85rem", color: "rgba(255, 255, 255, 1)" }}>
+                <Link to="/" className="hover:text-white transition-colors" style={{ color: "rgba(255, 255, 255, 1)" }}>Privacy policy</Link>
+                <Link to="/" className="hover:text-white transition-colors" style={{ color: "rgba(255, 255, 255, 1)" }}>Terms & conditions</Link>
+                <span style={{ color: "rgba(255,255,255,1)" }} className="hidden lg:inline">Crafted with precision</span>
               </div>
             </div>
           </div>

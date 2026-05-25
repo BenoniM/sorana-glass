@@ -26,16 +26,31 @@ const values = ["Quality", "Reliability", "Responsibility", "Efficiency", "Custo
 function About() {
   return (
     <>
-      <section className="border-b border-border bg-surface">
-        <div className="mx-auto max-w-7xl px-6 py-24">
-          <p className="text-sm font-semibold uppercase tracking-widest text-accent">About us</p>
-          <h1 className="mt-3 max-w-3xl font-display text-5xl font-bold text-balance md:text-6xl">
+      <section className="relative overflow-hidden py-16 flex flex-col items-center justify-center text-center">
+        {/* Greenish/orangeish glassy background */}
+        <div className="absolute inset-0 z-0">
+          <div className="absolute top-0 left-1/4 w-[50vw] h-[50vw] max-w-[800px] max-h-[800px] bg-[#0A7C3F]/50 rounded-full blur-[80px] -translate-y-1/3 -translate-x-2/3" />
+          <div className="absolute bottom-0 right-1/4 w-[50vw] h-[50vw] max-w-[800px] max-h-[800px] bg-[#E87732]/40 rounded-full blur-[80px] translate-y-1/3 translate-x-2/3" />
+          <div className="absolute inset-0 bg-background/30 backdrop-blur-[30px]" />
+        </div>
+
+        <div className="relative z-10 h-full w-full max-w-6xl px-6 flex flex-col items-center">
+          <p className="mt-10 mb-8 max-w-3xl capitalize font-display text-3xl font-semibold leading-tight">
             From auto glass roots to Ethiopia's most advanced processor.
-          </h1>
-          <p className="mt-6 max-w-2xl text-lg text-muted-foreground">
-            Sorana Glass began with deep technical expertise in automotive glass and has grown into a
-            fully integrated glass solutions provider — combining over 20 years of industry experience
-            with modern production technology.
+          </p>
+
+          <div className="relative p-2 md:p-3 bg-[#0A7C3F]/30 backdrop-blur-md border border-white/20 shadow-2xl mb-10 w-xl max-w-3xl mx-auto">
+            <div className="p-1 rounded-sm">
+              <img 
+                src="https://images.unsplash.com/photo-1600607686527-6fb886090705?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80" 
+                alt="Sorana Glass Interior" 
+                className="w-full h-[180px] sm:h-[220px] md:h-[200px] object-cover opacity-95" 
+              />
+            </div>
+          </div>
+
+          <p className="mt-3 max-w-5xl capitalize font-display text-lg font-light text-balance">
+            Sorana Glass began with deep technical expertise in automotive glass and has grown into a fully integrated glass solutions provider — combining over 20 years of industry experience with modern production technology.
           </p>
         </div>
       </section>
