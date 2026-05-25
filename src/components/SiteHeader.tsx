@@ -4,7 +4,7 @@ import { Menu, X } from "lucide-react";
 import logoImg from "@/assets/logo/Sorana-Logo.png";
 import gsap from "gsap";
 
-function AnimatedLink({ to, onClick, children, className = "" }: { to: string; onClick: () => void; children: React.ReactNode; className?: string }) {
+function AnimatedLink({ to, onClick, children, className = "" }: { to: any; onClick: () => void; children: React.ReactNode; className?: string }) {
   return (
     <Link to={to} onClick={onClick} className={`group relative overflow-hidden inline-flex items-center w-fit ${className}`}>
       <span className="transition-transform duration-500 ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:-translate-y-[110%]">
@@ -112,6 +112,13 @@ export function SiteHeader() {
       }
     }
   }, [isOpen]);
+
+  useEffect(() => {
+    // Reset state when navigating to a different page
+    setIsOpen(false);
+    setActiveMode('top');
+    isBottomRef.current = false;
+  }, [pathname]);
 
   const handleCapsuleClick = () => {
     if (activeMode === 'bottom' && isOpen) {

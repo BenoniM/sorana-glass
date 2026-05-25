@@ -150,11 +150,12 @@ export function ServicesSection() {
   }, []);
 
   return (
-    <section
-      ref={sectionRef}
-      className="svc-section"
-      aria-labelledby="svc-heading"
-    >
+    <div className="svc-pin-wrapper">
+      <section
+        ref={sectionRef}
+        className="svc-section"
+        aria-labelledby="svc-heading"
+      >
       {/* ── Expanding box ──────────────────────────────────────────────────── */}
       <div ref={boxRef} className="svc-box">
 
@@ -206,5 +207,6 @@ export function ServicesSection() {
         </ul>
       </div>
     </section>
+    </div>
   );
 }

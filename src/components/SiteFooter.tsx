@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState } from "react";
-import { Link } from "@tanstack/react-router";
+import { Link, useRouterState } from "@tanstack/react-router";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -19,6 +19,9 @@ export function SiteFooter() {
      Phase 2 (progress 0.5→1): footer is fully in place; capsule travels
        downward to its resting spot near the bottom of the viewport.
   ───────────────────────────────────────────────────────────────────────── */
+  const router = useRouterState();
+  const pathname = router.location.pathname;
+
   useEffect(() => {
     const slide     = slideRef.current;
     const sorana    = soranaRef.current;
@@ -33,17 +36,27 @@ export function SiteFooter() {
     if (siteHeader) {
       gsap.set(siteHeader, { y: 0 });
     }
+    
+    setVisible(false);
 
     let st: ScrollTrigger | null = null;
+    let rafId: number;
 
     const init = () => {
-      const industries = document.getElementById("industries-section");
-      if (!industries) { requestAnimationFrame(init); return; }
+      // If we're not on the home page, industries-section might not exist, but let's look for a generic footer trigger if needed.
+      // For now, the original code looked for industries-section. 
+      // To avoid infinite loops on other pages, we should only wait if we are on the home page, or look for the last section.
+      const triggerElement = document.getElementById("industries-section") || document.querySelector("main")?.lastElementChild;
+      
+      if (!triggerElement) { 
+        rafId = requestAnimationFrame(init); 
+        return; 
+      }
 
       const tl = gsap.timeline({
         scrollTrigger: {
-          trigger: industries,
-          start: "bottom 200%",
+          trigger: triggerElement,
+          start: pathname === '/' ? "bottom 200%" : "bottom 100%",
           end:   "bottom bottom",
           scrub: 1.0,
           onEnter:     () => {
@@ -85,9 +98,13 @@ export function SiteFooter() {
       st = tl.scrollTrigger as ScrollTrigger;
     };
 
-    requestAnimationFrame(init);
-    return () => { st?.kill(); };
-  }, []);
+    rafId = requestAnimationFrame(init);
+    
+    return () => { 
+      cancelAnimationFrame(rafId);
+      st?.kill(); 
+    };
+  }, [pathname]);
 
   return (
     <>
