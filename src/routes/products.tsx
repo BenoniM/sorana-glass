@@ -133,7 +133,7 @@ function Products() {
   return (
     <div className="relative bg-background">
       <ErrorBoundary>
-        <WebGLGallery selector=".gallery-img" />
+        <WebGLGallery selector=".gallery-img" textWrapperSelector=".gallery-text-wrapper" />
       </ErrorBoundary>
       {/* ── Hero Section — sits above WebGL canvas (z:5) via z-index:10 */}
       <section
@@ -211,20 +211,22 @@ function Products() {
                 }}
               >
                 {/* Title above image */}
-                <p
-                  style={{
-                    fontFamily: "var(--font-display)",
-                    fontSize: "9px",
-                    fontWeight: 700,
-                    textTransform: "uppercase",
-                    letterSpacing: "0.18em",
-                    color: "#208349",
-                    marginBottom: "9px",
-                    lineHeight: 1,
-                  }}
-                >
-                  {c.name}
-                </p>
+                <div className="gallery-text-wrapper" style={{ marginBottom: "9px" }}>
+                  <p
+                    style={{
+                      fontFamily: "var(--font-display)",
+                      fontSize: "9px",
+                      fontWeight: 700,
+                      textTransform: "uppercase",
+                      letterSpacing: "0.18em",
+                      color: "#208349",
+                      lineHeight: 1,
+                      willChange: "transform",
+                    }}
+                  >
+                    {c.name}
+                  </p>
+                </div>
 
                 {/* Image — portrait 3:4 */}
                 <div style={{ overflow: "hidden", width: "100%" }}>
@@ -251,17 +253,19 @@ function Products() {
                 </div>
 
                 {/* Description below image */}
-                <p
-                  style={{
-                    fontFamily: "var(--font-sans)",
-                    fontSize: "11px",
-                    color: "var(--color-muted-foreground)",
-                    marginTop: "10px",
-                    lineHeight: 1.75,
-                  }}
-                >
-                  {c.desc}
-                </p>
+                <div className="gallery-text-wrapper" style={{ marginTop: "10px" }}>
+                  <p
+                    style={{
+                      fontFamily: "var(--font-sans)",
+                      fontSize: "11px",
+                      color: "var(--color-muted-foreground)",
+                      lineHeight: 1.75,
+                      willChange: "transform",
+                    }}
+                  >
+                    {c.desc}
+                  </p>
+                </div>
               </article>
             );
           })}

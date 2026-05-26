@@ -1,6 +1,9 @@
 import { useEffect, useRef } from 'react';
 
-interface Props { selector: string; }
+interface Props { 
+  selector: string; 
+  textWrapperSelector?: string; 
+}
 
 /* ── GLSL ─────────────────────────────────────────────────────────────────── */
 const VERT = `
@@ -157,7 +160,7 @@ function loadTexture(gl: WebGLRenderingContext, src: string) {
 }
 
 /* ── Component ───────────────────────────────────────────────────────────── */
-export function WebGLGallery({ selector }: Props) {
+export function WebGLGallery({ selector, textWrapperSelector }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -252,6 +255,47 @@ export function WebGLGallery({ selector }: Props) {
         gl.uniform1f(uStrength, strength);
 
         gl.drawElements(gl.TRIANGLES, count, gl.UNSIGNED_SHORT, 0);
+
+        if (textWrapperSelector) {
+          const titleWrapper = el.parentElement?.previousElementSibling as HTMLElement;
+          const descWrapper = el.parentElement?.nextElementSibling as HTMLElement;
+
+          const applyTextTransform = (wrapper: HTMLElement, isTop: boolean) => {
+            if (!wrapper || !wrapper.matches(textWrapperSelector)) return;
+            const textEl = wrapper.firstElementChild as HTMLElement;
+            if (!textEl) return;
+
+            const textR = wrapper.getBoundingClientRect();
+            const textCenterY = textR.top + textR.height / 2;
+            
+            const refY = isTop ? r.top : r.bottom;
+            const ndcRefY = -((refY / H) * 2.0 - 1.0);
+            
+            const globalCurve = Math.cos(ndcRefY * Math.PI * 0.5) * strength;
+            const globalTilt = -ndcRefY * strength * 1.5;
+            const z = globalCurve + globalTilt;
+            const w = 1.0 - (z / 2.0);
+
+            const leftX = r.left;
+            const ndcLeftX = (leftX / W) * 2.0 - 1.0;
+            const projectedNdcLeftX = ndcLeftX / w;
+            const newLeftX = (projectedNdcLeftX + 1.0) * 0.5 * W;
+            const deltaX = newLeftX - leftX;
+
+            const ndcTextY = -((textCenterY / H) * 2.0 - 1.0);
+            const projectedNdcTextY = ndcTextY / w;
+            const newTextY = (-projectedNdcTextY + 1.0) * 0.5 * H;
+            const deltaY = newTextY - textCenterY;
+
+            const scale = 1.0 / w;
+
+            textEl.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(${scale})`;
+            textEl.style.transformOrigin = "left center";
+          };
+
+          applyTextTransform(titleWrapper, true);
+          applyTextTransform(descWrapper, false);
+        }
       });
 
       raf = requestAnimationFrame(draw);
