@@ -16,7 +16,7 @@ const INDUSTRIES = [
   { ...industries[5], image: 'https://images.pexels.com/photos/5442128/pexels-photo-5442128.jpeg' },
 ];
 
-function ParallaxCard({ image, alt }: { image: string; alt: string }) {
+function ZoomCard({ image, alt }: { image: string; alt: string }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
 
@@ -26,17 +26,35 @@ function ParallaxCard({ image, alt }: { image: string; alt: string }) {
     if (!container || !img) return;
 
     const ctx = gsap.context(() => {
+      // Zoom in as it approaches the center
       gsap.fromTo(
         img,
-        { yPercent: -14 },
+        { scale: 1 },
         {
-          yPercent: 14,
+          scale: 1.6,
           ease: 'none',
           scrollTrigger: {
             trigger: container,
             start: 'top bottom',
+            end: 'center center',
+            scrub: true,
+          },
+        }
+      );
+
+      // Zoom out as it leaves the center
+      gsap.fromTo(
+        img,
+        { scale: 1.6 },
+        {
+          scale: 1,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: container,
+            start: 'center center',
             end: 'bottom top',
             scrub: true,
+            immediateRender: false,
           },
         }
       );
@@ -48,14 +66,13 @@ function ParallaxCard({ image, alt }: { image: string; alt: string }) {
   return (
     <div
       ref={containerRef}
-      className="w-[280px] h-[280px] md:w-[320px] md:h-[320px] lg:w-[400px] lg:h-[400px] overflow-hidden shadow-2xl"
+      className="w-[280px] h-[280px] md:w-[320px] md:h-[320px] lg:w-[400px] lg:h-[400px] overflow-hidden shadow-2xl rounded-sm"
     >
       <img
         ref={imgRef}
         src={image}
         alt={alt}
-        className="w-full h-[128%] object-cover brightness-75 will-change-transform"
-        style={{ marginTop: '-14%' }}
+        className="w-full h-full object-cover brightness-75 will-change-transform"
       />
     </div>
   );
@@ -66,6 +83,7 @@ export function ProjectsIndustriesSection() {
   const leftImagesRef = useRef<(HTMLDivElement | null)[]>([]);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [activeIndex, setActiveIndex] = useState(0);
+  const activeIndexRef = useRef(0);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -135,7 +153,28 @@ export function ProjectsIndustriesSection() {
             }
           });
 
-          setActiveIndex(closestIdx);
+          const currentIdx = activeIndexRef.current;
+          let nextIdx = currentIdx;
+
+          if (closestIdx !== currentIdx) {
+            if (closestDist < window.innerHeight * 0.25) {
+              nextIdx = closestIdx;
+            } else {
+              const oldCard = cards[currentIdx];
+              if (oldCard) {
+                const oldRect = oldCard.getBoundingClientRect();
+                const oldMid = oldRect.top + oldRect.height / 2;
+                if (Math.abs(oldMid - viewportMid) > window.innerHeight * 0.75) {
+                  nextIdx = closestIdx;
+                }
+              }
+            }
+          }
+
+          if (nextIdx !== currentIdx) {
+            activeIndexRef.current = nextIdx;
+            setActiveIndex(nextIdx);
+          }
         },
       });
     }, sectionRef);
@@ -163,73 +202,55 @@ export function ProjectsIndustriesSection() {
       </div>
 
       {/* RIGHT SIDE: Scrolling image + description cards */}
-<div className="ml-auto w-full md:w-1/2 flex flex-col items-center z-20">
-  <div className="w-full relative" style={{ padding: "50vh 0" }}>
-    {INDUSTRIES.map((ind, i) => (
-      <div
-        key={ind.name}
-        ref={el => { cardRefs.current[i] = el; }}
-        className="h-[100vh] flex flex-col items-center justify-center relative w-full px-4"
-      >
-        <div className="relative">
-          <ParallaxCard image={ind.image} alt={ind.name} />
-
-          {/* Title centered on this specific image */}
-          <h2
-  className="absolute inset-0 flex items-center justify-center font-display text-4xl md:text-5xl lg:text-6xl font-medium leading-tight text-center transition-all duration-500 pointer-events-none"
-  style={{
-    opacity: activeIndex === i ? 1 : 0,
-    transform:
-      activeIndex === i
-        ? 'translateY(0)'
-        : activeIndex > i
-          ? 'translateY(-18px)'
-          : 'translateY(18px)',
-
-    // Glassy orange blend
-    background: `
-      linear-gradient(
-        180deg,
-        rgba(255,255,255,0.98) 0%,
-        rgba(255,255,255,0.78) 20%,
-        rgba(227,118,50,0.92) 55%,
-        rgba(255,255,255,0.72) 78%,
-        rgba(227,118,50,0.85) 100%
-      )
-    `,
-
-    WebkitBackgroundClip: 'text',
-    backgroundClip: 'text',
-    color: 'transparent',
-    WebkitTextFillColor: 'transparent',
-
-    // subtle glass edge
-    WebkitTextStroke: '1px rgba(255,255,255,0.16)',
-
-    // glossy glow
-    textShadow: `
-      0 2px 10px rgba(227,118,50,0.28),
-      0 4px 24px rgba(0,0,0,0.38),
-      0 0 18px rgba(255,255,255,0.10)
-    `,
-
-    filter: `
-      drop-shadow(0 1px 1px rgba(0,0,0,0.18))
-      drop-shadow(0 0 10px rgba(227,118,50,0.18))
-    `,
-  }}
->
-  {ind.name}
-</h2>
+      <div className="ml-auto w-full md:w-1/2 relative z-20">
+        {/* STICKY TITLE CONTAINER */}
+        <div className="absolute inset-0 w-full pointer-events-none z-40 flex flex-col">
+          <div className="sticky top-0 h-screen w-full flex items-center justify-center">
+            <div className="relative w-full flex items-center justify-center">
+              {INDUSTRIES.map((ind, i) => (
+                <div
+                  key={ind.name}
+                  className="absolute flex items-center justify-center pointer-events-none"
+                >
+                  <div className="overflow-hidden">
+                    <h2
+                      className="font-display text-4xl md:text-5xl lg:text-6xl font-medium leading-[1.1] text-center transition-transform duration-700 pointer-events-none text-white uppercase"
+                      style={{
+                        transform:
+                          activeIndex === i
+                            ? 'translateY(0)'
+                            : activeIndex > i
+                              ? 'translateY(-105%)'
+                              : 'translateY(105%)',
+                      }}
+                    >
+                      {ind.name.split(' ').map((word, wIdx) => (
+                        <span key={wIdx} className="block">{word}</span>
+                      ))}
+                    </h2>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
 
-        <p className="relative z-30 mt-10 text-center text-white/80 max-w-sm text-sm tracking-wide font-light">
-          {ind.desc}
-        </p>
+        <div className="w-full relative flex flex-col items-center" style={{ padding: "50vh 0" }}>
+          {INDUSTRIES.map((ind, i) => (
+            <div
+              key={ind.name}
+              ref={el => { cardRefs.current[i] = el; }}
+              className="h-[100vh] flex flex-col items-center justify-center relative w-full px-4"
+            >
+              <ZoomCard image={ind.image} alt={ind.name} />
+
+              <p className="relative z-30 mt-10 text-center text-[#e37632]/90 max-w-sm text-sm tracking-wide font-light">
+                {ind.desc}
+              </p>
+            </div>
+          ))}
+        </div>
       </div>
-    ))}
-  </div>
-</div>
     </section>
   );
 }

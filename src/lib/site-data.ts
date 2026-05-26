@@ -28,9 +28,9 @@ export const services = [
 ] as const;
 
 export const industries = [
-  { name: "Real Estate & Construction", desc: "High-rises, villas, hotels, hospitals and commercial buildings across Ethiopia." },
+  { name: "Real-Estate & Construction", desc: "High-rises, villas, hotels, hospitals and commercial buildings across Ethiopia." },
   { name: "Automotive Industry", desc: "OEM supply and replacement glass for car assembly lines and dealerships." },
-  { name: "Government & Infrastructure", desc: "Large-scale public projects, museums and institutional facilities." },
+  { name: "Government Infrastructure", desc: "Large-scale public projects, museums and institutional facilities." },
   { name: "Hospitality", desc: "Hotels, resorts and restaurants requiring premium custom glasswork." },
   { name: "Furniture Manufacturing", desc: "Made-to-spec glass tops, panels and decorative components." },
   { name: "Interior Designers", desc: "Frameless partitions, showers, mirrors and decorative glass." },
