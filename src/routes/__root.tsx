@@ -74,18 +74,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const isContact = pathname === "/contact";
+  const isFullscreenRoute = pathname === "/contact" || pathname === "/gallery";
 
   return (
     <QueryClientProvider client={queryClient}>
       <ScrollToTop />
       <LoadingScreen />
-      <div className={isContact ? "h-screen flex flex-col overflow-hidden" : "flex min-h-screen flex-col"}>
+      <div className={isFullscreenRoute ? "h-[100dvh] flex flex-col overflow-hidden" : "flex min-h-screen flex-col"}>
         <SiteHeader />
-        <main className={isContact ? "flex-1 overflow-hidden" : "flex-1"}>
+        <main className={isFullscreenRoute ? "flex-1 overflow-hidden" : "flex-1"}>
           <Outlet />
         </main>
-        {!isContact && <SiteFooter />}
+        {!isFullscreenRoute && <SiteFooter />}
       </div>
     </QueryClientProvider>
   );
