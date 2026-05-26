@@ -8,10 +8,20 @@ export function ScrollToTop() {
     if ("scrollRestoration" in window.history) {
       window.history.scrollRestoration = "manual";
     }
+    // Tell GSAP ScrollTrigger not to restore scroll position on refresh
+    if (typeof window !== "undefined") {
+      import("gsap/ScrollTrigger").then(({ ScrollTrigger }) => {
+        ScrollTrigger.clearScrollMemory("manual");
+      }).catch(() => {});
+    }
   }, []);
 
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+    const timer = setTimeout(() => {
+      window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+    }, 100);
+    return () => clearTimeout(timer);
   }, [pathname]);
 
   useEffect(() => {
