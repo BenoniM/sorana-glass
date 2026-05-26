@@ -108,8 +108,13 @@ export function InteractiveGallery() {
 
     let rafId: number;
     const loop = () => {
-      const targetVx = isHoveredRef.current ? 0 : targetVelocity.current.x;
-      const targetVy = isHoveredRef.current ? 0 : targetVelocity.current.y;
+      let targetVx = isHoveredRef.current ? 0 : targetVelocity.current.x;
+      let targetVy = isHoveredRef.current ? 0 : targetVelocity.current.y;
+
+      if (document.body.classList.contains("nav-open")) {
+        targetVx = 0;
+        targetVy = 0;
+      }
 
       velocity.current.x += (targetVx - velocity.current.x) * 0.08;
       velocity.current.y += (targetVy - velocity.current.y) * 0.08;

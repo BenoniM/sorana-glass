@@ -31,6 +31,15 @@ export function SiteHeader() {
   const tlRef = useRef<gsap.core.Timeline | null>(null);
 
   useEffect(() => {
+    if (isOpen) {
+      document.body.classList.add("nav-open");
+    } else {
+      document.body.classList.remove("nav-open");
+    }
+    return () => document.body.classList.remove("nav-open");
+  }, [isOpen]);
+
+  useEffect(() => {
     const handleBottomEnter = () => {
       isBottomRef.current = true;
       setActiveMode('bottom');
@@ -138,7 +147,7 @@ export function SiteHeader() {
         ref={menuRef}
         className={`absolute left-0 w-full -z-10 ${activeMode === 'bottom' ? 'bottom-0 pb-[64px]' : 'top-0 pt-[64px]'}`}
       >
-        <div className="w-full bg-gradient-to-br from-[#0A7C3F]/95 to-[#E87732]/95 backdrop-blur-2xl border border-white/20 shadow-2xl rounded-none">
+        <div className="w-full bg-gradient-to-br from-[#0A7C3F]/95 to-[#E87732]/95 backdrop-blur-2xl rounded-none">
            <div className="p-8 flex flex-col gap-5 text-white justify-between">
               <div>
                 <div className="text-[10px] font-bold tracking-[0.2em] mb-4 uppercase opacity-60">Menu</div>
@@ -148,14 +157,14 @@ export function SiteHeader() {
                   <AnimatedLink to="/products" onClick={() => setIsOpen(false)}>Products</AnimatedLink>
                   <AnimatedLink to="/projects" onClick={() => setIsOpen(false)}>Projects</AnimatedLink>
                   <AnimatedLink to="/services" onClick={() => setIsOpen(false)}>Services</AnimatedLink>
-                  <AnimatedLink to="/contact" onClick={() => setIsOpen(false)}>Contact</AnimatedLink>
+                  {/* <AnimatedLink to="/gallery" onClick={() => setIsOpen(false)}>Gallery</AnimatedLink> */}
                 </nav>
               </div>
 
               <div className="grid grid-cols-2 gap-4 text-xs mt-6 pt-4 border-t border-white/20">
                 <div className="flex flex-col gap-2">
-                  <AnimatedLink to="/" onClick={() => setIsOpen(false)} className="text-xs font-normal">News</AnimatedLink>
-                  <AnimatedLink to="/gallery" onClick={() => setIsOpen(false)} className="text-xs font-normal">Gallery</AnimatedLink>
+{/*                   <AnimatedLink to="/contact" onClick={() => setIsOpen(false)} className="text-xs font-normal">Contact</AnimatedLink> */}
+                  <AnimatedLink to="/gallery" onClick={() => setIsOpen(false)} className="text-lg font-normal">Gallery</AnimatedLink>
                 </div>
                 <div className="flex flex-col gap-2 text-right">
                   <a href="tel:02081567290" className="hover:opacity-70 transition-opacity">020 8156 7290</a>
@@ -166,9 +175,9 @@ export function SiteHeader() {
               <a 
                 href="/contact"
                 onClick={() => setIsOpen(false)}
-                className="mt-4 w-full py-3 bg-[#0A100D]/80 text-white flex items-center justify-center gap-2 hover:bg-black transition-colors rounded-none text-[10px] tracking-[0.2em] uppercase font-bold"
+                className="mt-4 w-full py-3 bg-[#0A7C3F]/80 text-white flex items-center justify-center gap-2 hover:bg-[#E87732] transition-colors rounded-none text-[10px] tracking-[0.2em] uppercase font-bold"
               >
-                <span className="text-sm leading-none mb-[2px]">↳</span> GET A QUOTE
+                <span className="text-sm leading-none mb-[2px]">↳</span> CONTACT US
               </a>
            </div>
         </div>
@@ -178,7 +187,7 @@ export function SiteHeader() {
       <div 
         ref={capsuleRef}
         onClick={handleCapsuleClick}
-        className="h-12 bg-gradient-to-r from-[#0A7C3F]/60 to-[#E87732]/60 backdrop-blur-2xl border border-white/20 relative mx-auto overflow-hidden shadow-2xl cursor-pointer rounded-none z-20"
+        className="h-12 bg-gradient-to-tr from-[#0A7C3F]/70 to-[#E87732]/70 backdrop-blur-2xl relative mx-auto overflow-hidden shadow-2xl cursor-pointer rounded-none z-20"
         style={{ width: "100%" }}
       >
         {/* Closed State Content */}
