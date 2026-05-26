@@ -123,10 +123,49 @@ export function ServiceCatalogueSection() {
         className="relative w-full"
         style={{ height: `${(N + 0.5) * 100}vh` }}
       >
-        <div className="sticky top-0 h-screen w-full overflow-hidden flex bg-[#083D1F]">
+        <div className="sticky top-0 h-screen w-full overflow-hidden flex bg-black">
           
-          {/* LEFT: Texts */}
-          <div className="w-1/2 h-full flex flex-col justify-center px-10 md:px-16 lg:px-24 z-10 caps-section relative">
+          {/* BACKGROUND & RIGHT IMAGES */}
+          <div className="absolute inset-0 w-full h-full z-0">
+            {CATALOGUE_SERVICES.map((cap, i) => (
+              <div
+                key={`img-container-${i}`}
+                ref={el => { rightContainersRef.current[i] = el; }}
+                className="absolute inset-0 w-full h-full will-change-[clip-path]"
+                style={{
+                  zIndex: i,
+                  clipPath: i === 0 ? 'inset(0% 0 0% 0)' : 'inset(100% 0 0% 0)',
+                }}
+              >
+                {/* Blurred Background spanning full width */}
+                <div 
+                  ref={el => { bgImagesRef.current[i] = el; }}
+                  className="absolute inset-0 bg-cover bg-center will-change-transform"
+                  style={{ 
+                    backgroundImage: `url(${cap.image})`, 
+                    filter: 'blur(30px) brightness(0.6)', 
+                    transform: 'scale(1.2)' 
+                  }}
+                />
+                
+                {/* Foreground Image constrained to right half */}
+                <div className="absolute right-0 w-1/2 h-full flex items-center justify-center">
+                  <div className="w-[55%] aspect-[4/5] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] relative rounded-sm">
+                    <img
+                      ref={el => { centerImagesRef.current[i] = el; }}
+                      src={cap.image}
+                      alt={cap.title}
+                      className="w-full h-full object-cover will-change-transform"
+                      style={{ transform: i === 0 ? 'scale(1)' : 'scale(1.4)' }}
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* LEFT: Glassy Texts Panel */}
+          <div className="w-1/2 h-full flex flex-col justify-center px-10 md:px-16 lg:px-24 z-10 caps-section relative bg-[#083D1F]/70 backdrop-blur-[30px] border-r border-white/5 shadow-[20px_0_40px_rgba(0,0,0,0.2)]">
             
             {/* Header Block */}
             <div className="mb-12 lg:mb-16">
@@ -150,45 +189,6 @@ export function ServiceCatalogueSection() {
               ))}
             </div>
 
-          </div>
-
-          {/* RIGHT: Images */}
-          <div className="w-1/2 h-full relative overflow-hidden bg-black">
-            {CATALOGUE_SERVICES.map((cap, i) => (
-              <div
-                key={`img-container-${i}`}
-                ref={el => { rightContainersRef.current[i] = el; }}
-                className="absolute inset-0 w-full h-full will-change-[clip-path]"
-                style={{
-                  zIndex: i,
-                  clipPath: i === 0 ? 'inset(0% 0 0% 0)' : 'inset(100% 0 0% 0)',
-                }}
-              >
-                {/* Blurred Background */}
-                <div 
-                  ref={el => { bgImagesRef.current[i] = el; }}
-                  className="absolute inset-0 bg-cover bg-center will-change-transform"
-                  style={{ 
-                    backgroundImage: `url(${cap.image})`, 
-                    filter: 'blur(30px) brightness(0.7)', 
-                    transform: 'scale(1.2)' 
-                  }}
-                />
-                
-                {/* Foreground Image */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-[55%] aspect-[4/5] overflow-hidden shadow-2xl relative">
-                    <img
-                      ref={el => { centerImagesRef.current[i] = el; }}
-                      src={cap.image}
-                      alt={cap.title}
-                      className="w-full h-full object-cover will-change-transform"
-                      style={{ transform: i === 0 ? 'scale(1)' : 'scale(1.4)' }}
-                    />
-                  </div>
-                </div>
-              </div>
-            ))}
           </div>
           
         </div>

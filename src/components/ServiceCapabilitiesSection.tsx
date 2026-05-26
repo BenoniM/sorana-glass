@@ -43,6 +43,7 @@ const N = CAPABILITIES.length;
 export function ServiceCapabilitiesSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const leftImagesRef = useRef<(HTMLDivElement | null)[]>([]);
+  const bgImagesRef = useRef<(HTMLDivElement | null)[]>([]);
   const videoCardsRef = useRef<(HTMLDivElement | null)[]>([]);
   const activeIndexRef = useRef(0);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -61,7 +62,7 @@ export function ServiceCapabilitiesSection() {
           const totalSteps = N - 1;
           const step = sp * totalSteps;
 
-          // LEFT image clip-path reveal
+          // LEFT image & BACKGROUND clip-path reveal
           CAPABILITIES.forEach((_, i) => {
             let topClip = 100, bottomClip = 0;
             const revealStart = (i - 1) / totalSteps;
@@ -94,6 +95,9 @@ export function ServiceCapabilitiesSection() {
             }
             const el = leftImagesRef.current[i];
             if (el) el.style.clipPath = `inset(${topClip}% 0 ${bottomClip}% 0)`;
+
+            const bgEl = bgImagesRef.current[i];
+            if (bgEl) bgEl.style.clipPath = `inset(${topClip}% 0 ${bottomClip}% 0)`;
           });
 
           // VIDEO cards — each card slides DOWN to exit, revealing the one behind it
@@ -183,12 +187,16 @@ export function ServiceCapabilitiesSection() {
       <section
         ref={sectionRef}
         className="caps relative w-full"
-        style={{ height: `${N * 100}vh`, background: '#15783D' }}
+        style={{ height: `${N * 100}vh` }}
       >
         <div className="sticky top-0 h-screen w-full overflow-hidden flex">
 
+          {/* BACKGROUND BLURRED IMAGES */}
+          <div className="absolute inset-0 w-full h-full z-0 bg-[#133720]">
+          </div>
+
           {/* LEFT: image */}
-          <div style={{ width: '38%', flexShrink: 0, padding: '10px 0 10px 10px' }}>
+          <div style={{ width: '38%', flexShrink: 0, padding: '10px 0 10px 10px', zIndex: 10 }}>
             <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden' }}>
               {CAPABILITIES.map((cap, i) => (
                 <div
@@ -211,8 +219,11 @@ export function ServiceCapabilitiesSection() {
             </div>
           </div>
 
-          {/* RIGHT: content */}
-          <div style={{ position: 'relative', flex: 1, height: '100%', overflow: 'hidden' }}>
+          {/* RIGHT: content & glassy panel */}
+          <div 
+            style={{ position: 'relative', flex: 1, height: '100%', overflow: 'hidden' }}
+            className="bg-[#083D1F]/70 backdrop-blur-[30px] border-l border-white/5 z-10 shadow-[-20px_0_40px_rgba(0,0,0,0.2)]"
+          >
 
             {/* TITLE block */}
             <div style={{ position: 'absolute', top: '10%', left: '6%', width: '48%', zIndex: 20, pointerEvents: 'none' }}>
