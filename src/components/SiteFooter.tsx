@@ -56,7 +56,7 @@ export function SiteFooter() {
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: triggerElement,
-          start: "bottom 200%",
+          start: "bottom 180%",
           end:   "bottom 105%",
           scrub: 1.0,
           onEnter:     () => {

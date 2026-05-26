@@ -41,6 +41,7 @@ export function ServiceCatalogueSection() {
   const centerImagesRef = useRef<(HTMLImageElement | null)[]>([]);
   const bgImagesRef = useRef<(HTMLDivElement | null)[]>([]);
   const activeIndexRef = useRef(0);
+  const lastProgressRef = useRef(-1);
   const [activeIndex, setActiveIndex] = useState(0);
 
   useEffect(() => {
@@ -56,6 +57,12 @@ export function ServiceCatalogueSection() {
           // Pause the animation slightly before the section ends
           // so the user has time to read the last item before the footer arrives.
           const effectiveProgress = Math.min(1, self.progress / 0.85);
+          
+          if (effectiveProgress === 1 && lastProgressRef.current === 1) {
+            return;
+          }
+          lastProgressRef.current = effectiveProgress;
+
           const sp = effectiveProgress;
           const totalSteps = N - 1;
           const step = sp * totalSteps;
@@ -63,34 +70,32 @@ export function ServiceCatalogueSection() {
           CATALOGUE_SERVICES.forEach((_, i) => {
             const container = rightContainersRef.current[i];
             const centerImg = centerImagesRef.current[i];
-            const bgImg = bgImagesRef.current[i];
             
-            if (!container || !centerImg || !bgImg) return;
+            if (!container || !centerImg) return;
 
             const distance = step - i;
 
             // Container clip-path reveal
             if (distance <= -1) {
-              container.style.clipPath = 'inset(100% 0 0% 0)';
+              container.style.clipPath = 'inset(50% 25% 50% 75%)';
             } else if (distance >= 0) {
-              container.style.clipPath = 'inset(0% 0 0% 0)';
+              container.style.clipPath = 'inset(0% 0% 0% 0%)';
             } else {
               const p = distance + 1; 
               const eased = ease(p);
-              container.style.clipPath = `inset(${(1 - eased) * 100}% 0 0% 0)`;
+              const v = 1 - eased;
+              container.style.clipPath = `inset(${v * 50}% ${v * 25}% ${v * 50}% ${v * 75}%)`;
             }
 
             // Image scaling effect
             if (distance < 0) {
               const p = Math.max(0, distance + 1);
               const eased = ease(p);
-              centerImg.style.transform = `scale(${1.4 - 0.4 * eased})`;
-              bgImg.style.transform = `scale(${1.2 - 0.2 * eased})`;
+              centerImg.style.transform = `scale(${1.4 - 0.4 * eased}) translateZ(0)`;
             } else {
               const p = Math.min(1, distance);
               const eased = ease(p);
-              centerImg.style.transform = `scale(${1 - 0.15 * eased})`;
-              bgImg.style.transform = `scale(${1 - 0.05 * eased})`;
+              centerImg.style.transform = `scale(${1 - 0.15 * eased}) translateZ(0)`;
             }
           });
 
@@ -134,29 +139,29 @@ export function ServiceCatalogueSection() {
                 className="absolute inset-0 w-full h-full will-change-[clip-path]"
                 style={{
                   zIndex: i,
-                  clipPath: i === 0 ? 'inset(0% 0 0% 0)' : 'inset(100% 0 0% 0)',
+                  clipPath: i === 0 ? 'inset(0% 0% 0% 0%)' : 'inset(50% 25% 50% 75%)',
+                  transform: 'translateZ(0)' // Force GPU layer for clip-path animation
                 }}
               >
                 {/* Blurred Background spanning full width */}
                 <div 
-                  ref={el => { bgImagesRef.current[i] = el; }}
-                  className="absolute inset-0 bg-cover bg-center will-change-transform"
+                  className="absolute inset-0 bg-cover bg-center pointer-events-none"
                   style={{ 
                     backgroundImage: `url(${cap.image})`, 
-                    filter: 'blur(30px) brightness(0.6)', 
-                    transform: 'scale(1.2)' 
+                    filter: 'blur(15px) brightness(0.6)', 
+                    transform: 'scale(1.15) translateZ(0)' // Static scale to hide blurred edges
                   }}
                 />
                 
                 {/* Foreground Image constrained to right half */}
                 <div className="absolute right-0 w-1/2 h-full flex items-center justify-center">
-                  <div className="w-[55%] aspect-[4/5] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] relative rounded-sm">
+                  <div className="w-[55%] aspect-[4/5] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] relative rounded-sm transform-gpu">
                     <img
                       ref={el => { centerImagesRef.current[i] = el; }}
                       src={cap.image}
                       alt={cap.title}
                       className="w-full h-full object-cover will-change-transform"
-                      style={{ transform: i === 0 ? 'scale(1)' : 'scale(1.4)' }}
+                      style={{ transform: i === 0 ? 'scale(1) translateZ(0)' : 'scale(1.4) translateZ(0)' }}
                     />
                   </div>
                 </div>
@@ -165,7 +170,7 @@ export function ServiceCatalogueSection() {
           </div>
 
           {/* LEFT: Glassy Texts Panel */}
-          <div className="w-1/2 h-full flex flex-col justify-center px-10 md:px-16 lg:px-24 z-10 caps-section relative bg-[#083D1F]/70 backdrop-blur-[30px] border-r border-white/5 shadow-[20px_0_40px_rgba(0,0,0,0.2)]">
+          <div className="w-1/2 h-full flex flex-col justify-center px-10 md:px-16 lg:px-24 z-10 caps-section relative bg-[#083D1F]/70 backdrop-blur-xl border-r border-white/5 shadow-[20px_0_40px_rgba(0,0,0,0.2)]">
             
             {/* Header Block */}
             <div className="mb-12 lg:mb-16">
