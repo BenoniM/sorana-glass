@@ -11,6 +11,7 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
 } from "@tanstack/react-router";
 
 import "../styles.css";
@@ -72,14 +73,19 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const isContact = pathname === "/contact";
+
   return (
     <QueryClientProvider client={queryClient}>
       <ScrollToTop />
       <LoadingScreen />
-      <div className="flex min-h-screen flex-col">
+      <div className={isContact ? "h-screen flex flex-col overflow-hidden" : "flex min-h-screen flex-col"}>
         <SiteHeader />
-        <main className="flex-1"><Outlet /></main>
-        <SiteFooter />
+        <main className={isContact ? "flex-1 overflow-hidden" : "flex-1"}>
+          <Outlet />
+        </main>
+        {!isContact && <SiteFooter />}
       </div>
     </QueryClientProvider>
   );
