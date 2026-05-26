@@ -38,7 +38,7 @@ function Services() {
       ScrollTrigger.create({
         trigger: wrapperRef.current,
         start: "bottom bottom",
-        end: "+=100%",
+        end: () => "+=" + window.innerHeight,
         pin: contentRef.current,
         pinSpacing: true,
       });

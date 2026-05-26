@@ -36,7 +36,7 @@ function About() {
       ScrollTrigger.create({
         trigger: wrapperRef.current,
         start: "bottom bottom", // When the bottom of the wrapper hits the bottom of the viewport
-        end: "+=100%", // Pin it for the duration of 1 viewport height (for the footer reveal)
+        end: () => "+=" + window.innerHeight, // Pin it for the duration of 1 viewport height (for the footer reveal)
         pin: contentRef.current,
         pinSpacing: true, // Automatically adds the exact padding needed
       });

@@ -57,7 +57,7 @@ export function SiteFooter() {
         scrollTrigger: {
           trigger: triggerElement,
           start: "bottom 200%",
-          end:   "bottom bottom",
+          end:   "bottom 105%",
           scrub: 1.0,
           onEnter:     () => {
             setVisible(true);
