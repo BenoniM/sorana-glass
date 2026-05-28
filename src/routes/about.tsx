@@ -60,7 +60,7 @@ function About() {
             From auto glass roots to Ethiopia's most advanced processor.
           </p>
 
-          <div className="relative p-2 md:p-3 bg-[#0A7C3F]/30 backdrop-blur-md border border-white/20 shadow-2xl mb-10 w-xl max-w-3xl mx-auto">
+          <div className="relative p-2 md:p-3 bg-[#0A7C3F]/30 backdrop-blur-md border border-white/20 shadow-2xl mb-10 w-full max-w-3xl mx-auto">
             <div className="p-1 rounded-sm">
               <img 
                 src="https://images.unsplash.com/photo-1600607686527-6fb886090705?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80" 
