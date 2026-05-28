@@ -196,6 +196,8 @@ function Contact() {
     if (!introFinished || isHovered) return;
     
     const t = setInterval(() => {
+      if (window.innerWidth < 768) return; // Disable auto-rotation on mobile
+
       setActiveIndex((cur) => {
         const next = (cur + 1) % N;
         setPrevIndex(cur);
@@ -217,11 +219,11 @@ function Contact() {
   const active = PANELS[activeIndex];
 
   return (
-    <div className="h-full w-full flex overflow-hidden bg-[#071a0e]">
+    <div className="min-h-screen md:h-screen w-full flex flex-col md:flex-row overflow-visible md:overflow-hidden bg-[#071a0e]">
 
-      {/* ── LEFT: Animated image panels ───────────────────────── */}
+      {/* ── LEFT: Animated image panels (Bottom on mobile) ───────────────────────── */}
       <div
-        className="relative w-1/2 flex-shrink-0 overflow-hidden"
+        className="relative w-full h-[60vh] md:h-full md:w-1/2 flex-shrink-0 overflow-hidden order-2 md:order-1"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
@@ -267,9 +269,9 @@ function Contact() {
         </div>
       </div>
 
-      {/* ── RIGHT: Contact form ────────────────────────────────── */}
+      {/* ── RIGHT: Contact form (Top on mobile) ────────────────────────────────── */}
       <div
-        className="relative w-1/2 flex-shrink-0 flex flex-col justify-center"
+        className="relative w-full min-h-[60vh] md:h-full md:w-1/2 flex-shrink-0 flex flex-col justify-center order-1 md:order-2 pt-28 pb-12 md:py-0"
         style={{ background: "linear-gradient(160deg, #0A7C3F 0%, #064E26 100%)" }}
       >
         {/* Subtle grain */}
