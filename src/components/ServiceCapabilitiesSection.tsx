@@ -189,49 +189,23 @@ export function ServiceCapabilitiesSection() {
         className="caps relative w-full"
         style={{ height: `${N * 100}vh` }}
       >
-        <div className="sticky top-0 h-screen w-full overflow-hidden flex">
+        <div className="sticky top-0 h-screen w-full overflow-hidden flex flex-col md:flex-row">
 
           {/* BACKGROUND BLURRED IMAGES */}
           <div className="absolute inset-0 w-full h-full z-0 bg-[#133720]">
           </div>
 
-          {/* LEFT: image */}
-          <div style={{ width: '38%', flexShrink: 0, padding: '10px 0 10px 10px', zIndex: 10 }}>
-            <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden' }}>
-              {CAPABILITIES.map((cap, i) => (
-                <div
-                  key={`img-${i}`}
-                  ref={el => { leftImagesRef.current[i] = el; }}
-                  className="will-change-[clip-path]"
-                  style={{
-                    position: 'absolute', inset: 0, zIndex: i,
-                    clipPath: i === 0 ? 'inset(0% 0 0% 0)' : 'inset(100% 0 0% 0)',
-                  }}
-                >
-                  <img
-                    src={cap.image}
-                    alt={cap.title}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-                    loading={i === 0 ? 'eager' : 'lazy'}
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* RIGHT: content & glassy panel */}
+          {/* RIGHT: content & glassy panel (Top on Mobile, Right on Desktop) */}
           <div 
-            style={{ position: 'relative', flex: 1, height: '100%', overflow: 'hidden' }}
-            className="bg-[#083D1F]/70 backdrop-blur-[30px] border-l border-white/5 z-10 shadow-[-20px_0_40px_rgba(0,0,0,0.2)]"
+            className="relative w-full h-[60%] md:h-full md:flex-1 overflow-hidden bg-[#083D1F]/70 backdrop-blur-[30px] border-b md:border-b-0 md:border-l border-white/5 z-10 shadow-[0_20px_40px_rgba(0,0,0,0.2)] md:shadow-[-20px_0_40px_rgba(0,0,0,0.2)] order-1 md:order-2"
           >
-
             {/* TITLE block */}
-            <div style={{ position: 'absolute', top: '10%', left: '6%', width: '48%', zIndex: 20, pointerEvents: 'none' }}>
-              <div className="caps-slot mt-10" style={{ height: 'clamp(90px, 11vw, 130px)' }}>
+            <div className="absolute top-[55%] md:top-[10%] left-0 md:left-[6%] w-full md:w-[48%] z-20 pointer-events-none px-4 md:px-0 text-center md:text-left">
+              <div className="caps-slot md:mt-10" style={{ height: 'clamp(90px, 11vw, 130px)' }}>
                 {CAPABILITIES.map((cap, i) => (
                   <h2
                     key={`hl-${i}`}
-                    className="caps-headline caps-item"
+                    className="caps-headline caps-item w-full flex justify-center md:justify-start"
                     style={{
                       transitionDelay: '0.04s',
                       transform: activeIndex === i
@@ -246,12 +220,12 @@ export function ServiceCapabilitiesSection() {
             </div>
 
             {/* DESCRIPTION block */}
-            <div style={{ position: 'absolute', bottom: '10%', left: '6%', width: '44%', zIndex: 20, pointerEvents: 'none' }}>
+            <div className="absolute top-[65%] md:top-auto md:bottom-[10%] left-0 md:left-[6%] w-full md:w-[44%] z-20 pointer-events-none px-6 md:px-0 text-center md:text-left">
               <div className="caps-slot" style={{ height: 'clamp(72px, 9vw, 100px)' }}>
                 {CAPABILITIES.map((cap, i) => (
                   <p
                     key={`desc-${i}`}
-                    className="text-base text-white"
+                    className="text-base text-white w-full"
                     style={{
                       position: 'absolute', inset: 0,
                       transitionDelay: '0.06s',
@@ -269,15 +243,7 @@ export function ServiceCapabilitiesSection() {
 
             {/* VIDEOS — stacked, each one slides down on exit */}
             <div
-              style={{
-                position: 'absolute',
-                top: '8%',
-                right: '6%',
-                width: '30%',
-                height: '25%',
-                overflow: 'hidden',
-                zIndex: 10,
-              }}
+              className="absolute top-24 left-4 w-[35%] h-[25%] md:top-[8%] md:left-auto md:right-[6%] md:w-[30%] md:h-[25%] overflow-hidden z-10 rounded-sm shadow-xl"
             >
               {CAPABILITIES.map((cap, i) => (
                 <div
@@ -312,8 +278,32 @@ export function ServiceCapabilitiesSection() {
                 </div>
               ))}
             </div>
-
           </div>
+
+          {/* LEFT: image (Bottom on Mobile, Left on Desktop) */}
+          <div className="relative w-full h-[40%] md:h-full md:w-[38%] shrink-0 p-0 md:py-[10px] md:pl-[10px] z-10 order-2 md:order-1">
+            <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden' }}>
+              {CAPABILITIES.map((cap, i) => (
+                <div
+                  key={`img-${i}`}
+                  ref={el => { leftImagesRef.current[i] = el; }}
+                  className="will-change-[clip-path]"
+                  style={{
+                    position: 'absolute', inset: 0, zIndex: i,
+                    clipPath: i === 0 ? 'inset(0% 0 0% 0)' : 'inset(100% 0 0% 0)',
+                  }}
+                >
+                  <img
+                    src={cap.image}
+                    alt={cap.title}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                    loading={i === 0 ? 'eager' : 'lazy'}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+
         </div>
       </section>
     </>
