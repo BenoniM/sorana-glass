@@ -284,7 +284,7 @@ export function IndustriesSection() {
                   ))}
                 </ul>
 
-                <Link to="/projects" className="ids-cta">SEE ALL PRODUCTS</Link>
+                <Link to="/projects" className="ids-cta">SEE ALL PROJECTS</Link>
               </div>
             ))}
           </div>
@@ -396,9 +396,49 @@ export function IndustriesSection() {
         }
 
         @media (max-width: 768px) {
-          .ids-title-layer { max-width: 100%; }
-          .ids-title { font-size: clamp(2.5rem, 12vw, 4rem); }
-          .ids-right-col { bottom: calc(clamp(2rem,5vw,4rem) + 12rem); }
+          .ids-title-layer { 
+            max-width: 100%; 
+            padding: 0; /* Remove padding */
+            justify-content: center;
+            align-items: center; /* Perfectly center vertically */
+          }
+          .ids-title { 
+            font-size: 3.75rem; 
+            text-align: center;
+          }
+          .ids-right-col { 
+            left: 0;
+            right: 0;
+            bottom: auto;
+            top: calc(50% + 3.75rem); /* Start below the centered title with a gap */
+            display: flex;
+            justify-content: center;
+          }
+          .ids-overlay-layer {
+            left: 0;
+            right: 0;
+            align-items: center;
+          }
+          .ids-desc-box {
+            text-align: center;
+            width: 90%; /* Slight tweak for fit */
+          }
+          .ids-desc-tag {
+            font-size: 0.85rem; 
+          }
+          .ids-desc-text {
+            font-size: 1rem; 
+            line-height: 1.6;
+          }
+          .ids-list {
+            align-items: center;
+          }
+          .ids-list-name {
+            font-size: 1rem; 
+          }
+          .ids-cta {
+            font-size: 0.9rem; 
+          }
         }
       `}</style>
     </>

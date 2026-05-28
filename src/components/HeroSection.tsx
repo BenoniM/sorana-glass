@@ -336,29 +336,89 @@ export function HeroSection() {
           });
 
           // ─ Phase 2 (p: 0.45 → 1.0): expand clone pair + reveal card ──────
+          const bodyW    = document.documentElement.clientWidth;
+          const isMobile = bodyW < 768;
+
           if (p2 > 0 && hasFoundCenterRef.current && clonePairRef.current && activePairRef.current) {
-            const bodyW = document.documentElement.clientWidth;
-            const imgW = gsap.utils.interpolate(230, bodyW / 2, p2);
-            const imgH = gsap.utils.interpolate(310, window.innerHeight, p2);
-            const gap  = gsap.utils.interpolate(10, 0, p2);
-
-            gsap.set(clonePairRef.current.querySelectorAll("img"), { width: imgW, height: imgH });
-            gsap.set(clonePairRef.current, { gap: gap, autoAlpha: 1 });
-
+            const windowH  = window.innerHeight;
+            
             const origCx = bodyW / 2 - startWrapperOffsetRef.current.x;
-            const origCy = window.innerHeight / 2 - startWrapperOffsetRef.current.y;
-            const targetCx = bodyW / 2;
-            const targetCy = window.innerHeight / 2;
+            const origCy = windowH / 2 - startWrapperOffsetRef.current.y;
+            
+            // Initial grid image dimensions and gap
+            const startW   = 230;
+            const startH   = 310;
+            const startGap = 10;
+            
+            // Start positions (centers) - perfectly matches the side-by-side grid
+            const img1StartCx = origCx - startW / 2 - startGap / 2;
+            const img1StartCy = origCy;
+            const img2StartCx = origCx + startW / 2 + startGap / 2;
+            const img2StartCy = origCy;
 
-            const currentCx = gsap.utils.interpolate(origCx, targetCx, p2);
-            const currentCy = gsap.utils.interpolate(origCy, targetCy, p2);
+            let img1TargetCx, img1TargetCy, img1TargetW, img1TargetH;
+            let img2TargetCx, img2TargetCy, img2TargetW, img2TargetH;
 
-            const cloneWidth  = imgW * 2 + gap;
-            const cloneHeight = imgH;
+            if (isMobile) {
+              // Mobile: animate to stacked top/bottom
+              img1TargetW = bodyW;
+              img1TargetH = windowH / 2;
+              img1TargetCx = bodyW / 2;
+              img1TargetCy = windowH / 4;
 
-            gsap.set(clonePairRef.current, {
-              left: currentCx - cloneWidth  / 2,
-              top:  currentCy - cloneHeight / 2,
+              img2TargetW = bodyW;
+              img2TargetH = windowH / 2;
+              img2TargetCx = bodyW / 2;
+              img2TargetCy = windowH * 3 / 4;
+            } else {
+              // Desktop: animate to side-by-side
+              img1TargetW = bodyW / 2;
+              img1TargetH = windowH;
+              img1TargetCx = bodyW / 4;
+              img1TargetCy = windowH / 2;
+
+              img2TargetW = bodyW / 2;
+              img2TargetH = windowH;
+              img2TargetCx = bodyW * 3 / 4;
+              img2TargetCy = windowH / 2;
+            }
+
+            // Smoothly interpolate center coordinates and dimensions
+            const img1W  = gsap.utils.interpolate(startW, img1TargetW, p2);
+            const img1H  = gsap.utils.interpolate(startH, img1TargetH, p2);
+            const img1Cx = gsap.utils.interpolate(img1StartCx, img1TargetCx, p2);
+            const img1Cy = gsap.utils.interpolate(img1StartCy, img1TargetCy, p2);
+
+            const img2W  = gsap.utils.interpolate(startW, img2TargetW, p2);
+            const img2H  = gsap.utils.interpolate(startH, img2TargetH, p2);
+            const img2Cx = gsap.utils.interpolate(img2StartCx, img2TargetCx, p2);
+            const img2Cy = gsap.utils.interpolate(img2StartCy, img2TargetCy, p2);
+
+            const imgs = clonePairRef.current.querySelectorAll("img");
+            if (imgs.length === 2) {
+              gsap.set(imgs[0], { 
+                position: 'absolute',
+                width: img1W, 
+                height: img1H,
+                left: img1Cx - img1W / 2,
+                top: img1Cy - img1H / 2
+              });
+              gsap.set(imgs[1], { 
+                position: 'absolute',
+                width: img2W, 
+                height: img2H,
+                left: img2Cx - img2W / 2,
+                top: img2Cy - img2H / 2
+              });
+            }
+
+            // Container becomes a simple fullscreen absolute container
+            gsap.set(clonePairRef.current, { 
+              left: 0, 
+              top: 0, 
+              width: '100%', 
+              height: '100%', 
+              autoAlpha: 1 
             });
 
             // Fade out the entire grid seamlessly to reveal the clone
@@ -370,12 +430,18 @@ export function HeroSection() {
             gsap.set(stripsWrapperRef.current, { opacity: 1 });
           }
 
+          // On mobile the card completes its reveal at 75% of Phase 2 so the
+          // scrub-lag never leaves it visually "half-filled" when slide wipes begin.
+          const p2cardFinal = isMobile
+            ? Math.min(1, Math.max(0, p2 / 0.75))
+            : p2card;
+
           gsap.set(infoCardRef.current, {
-            height:    `${Math.max(1, p2card * 140)}px`,
-            autoAlpha: Math.min(p2card * 2, 1),
+            height:    `${Math.max(1, p2cardFinal * 140)}px`,
+            autoAlpha: Math.min(p2cardFinal * 2, 1),
           });
           gsap.set(infoCardInnerRef.current, {
-            autoAlpha: Math.max(0, (p2card - 0.45) / 0.55),
+            autoAlpha: Math.max(0, (p2cardFinal - 0.45) / 0.55),
           });
         },
       });
@@ -432,29 +498,35 @@ export function HeroSection() {
           });
 
           // 2. Info Card Layer Wipe Animations
+          // On mobile: card wipe completes at 50% of the step so the card feels
+          // snappy right when the user starts each new product step — eliminating
+          // the "half-filled, keep scrolling" sensation caused by scrub lag.
+          const isMobileCard = window.innerWidth < 768;
+          const cardStepEnd  = isMobileCard ? 0.5 : 1.0; // fraction of stepSize
+
           const cardLayers = document.querySelectorAll<HTMLElement>(".hero-info-card-layer");
           cardLayers.forEach((layer, i) => {
             if (i === 0) return; // Base layer is always fully unclipped
-            
+
             // The transition for layer i happens during step i-1
             const layerStart = (i - 1) * stepSize;
-            const layerEnd = i * stepSize;
-            
+            const layerEnd   = (i - 1) * stepSize + stepSize * cardStepEnd;
+
             let p = 0;
             if (sp <= layerStart) p = 0;
             else if (sp >= layerEnd) p = 1;
-            else p = (sp - layerStart) / stepSize;
-            
+            else p = (sp - layerStart) / (stepSize * cardStepEnd);
+
             const eased = gsap.utils.clamp(0, 1, p);
-            
+
             // Wipe from top to bottom: inset(0 0 100% 0) -> inset(0 0 0 0)
             layer.style.clipPath = `inset(0 0 ${100 - eased * 100}% 0)`;
-            
+
             // Manage pointer events: only the topmost visible layer should be interactive
             if (eased > 0.5 && p < 1) {
               layer.style.pointerEvents = 'auto';
             } else if (eased === 1) {
-               layer.style.pointerEvents = 'auto';
+              layer.style.pointerEvents = 'auto';
             } else {
                layer.style.pointerEvents = 'none';
             }
@@ -463,7 +535,7 @@ export function HeroSection() {
           // Ensure base layer pointer events are turned off if layer 1 is active
           const baseLayer = cardLayers[0];
           if (baseLayer) {
-             baseLayer.style.pointerEvents = sp > (stepSize * 0.5) ? 'none' : 'auto';
+            baseLayer.style.pointerEvents = sp > (stepSize * cardStepEnd * 0.5) ? 'none' : 'auto';
           }
         },
       });
@@ -478,13 +550,20 @@ export function HeroSection() {
         scrub:   1.2,
         onUpdate: (self) => {
           const p = self.progress;
-          // White panel slides in from LEFT: clip right edge 100%→0%
+          const isMobile = window.innerWidth < 768;
+          
+          // White panel slides in from LEFT on desktop (clip right edge), BOTTOM on mobile (clip top edge)
           if (aboutPanelRef.current) {
-            aboutPanelRef.current.style.clipPath = `inset(0 ${100 - p * 100}% 0 0)`;
+            aboutPanelRef.current.style.clipPath = isMobile
+              ? `inset(${100 - p * 100}% 0 0 0)` // wipes UP from bottom
+              : `inset(0 ${100 - p * 100}% 0 0)`; // wipes RIGHT from left
             aboutPanelRef.current.style.pointerEvents = p > 0.5 ? 'auto' : 'none';
           }
-          // Canvas (and hidden video) wipe in from RIGHT: clip left edge 100%→0%
-          const clipVal = `inset(0 0 0 ${100 - p * 100}%)`;
+          // Canvas (and hidden video) wipe in from RIGHT on desktop, TOP on mobile
+          const clipVal = isMobile
+            ? `inset(0 0 ${100 - p * 100}% 0)` // wipes DOWN from top
+            : `inset(0 0 0 ${100 - p * 100}%)`; // wipes LEFT from right
+            
           if (aboutVideoRef.current)  aboutVideoRef.current.style.clipPath  = clipVal;
           if (glCanvasRef.current)    glCanvasRef.current.style.clipPath    = clipVal;
           // Enable cursor interactions on video wrapper when visible
@@ -926,16 +1005,18 @@ export function HeroSection() {
 
             {/* Render stacked pill layers that wipe over each other */}
             {[...Array(1 + EXTRA_STEPS)].map((_, i) => (
-              <div 
-                key={i} 
+              <Link
+                key={i}
+                to="/products"
+                aria-label="View all products"
                 className="hero-info-card-layer"
                 style={{
                   zIndex: i,
                   // Glassy gradient: using the main color and a darker version with transparency
                   // Orange bg: rgba(192,107,47) -> darker rgba(130,65,25)
                   // Green bg: rgba(10,124,63) -> darker rgba(4,50,25)
-                  background: i === 1 
-                    ? 'linear-gradient(145deg, rgba(192, 107, 47, 0.45) 0%, rgba(130, 65, 25, 0.65) 100%)' 
+                  background: i === 1
+                    ? 'linear-gradient(145deg, rgba(192, 107, 47, 0.45) 0%, rgba(130, 65, 25, 0.65) 100%)'
                     : 'linear-gradient(145deg, rgba(10, 124, 63, 0.4) 0%, rgba(4, 50, 25, 0.65) 100%)',
                   boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.1), 0 8px 32px rgba(0,0,0,0.3)',
                   clipPath: i === 0 ? 'inset(0 0 0 0)' : 'inset(0 0 100% 0)',
@@ -955,12 +1036,13 @@ export function HeroSection() {
                 <div className="hero-card-text-group" style={{ position: 'absolute', inset: 0 }}>
                   <div className="hero-card-tl"></div>
                   <div className="hero-card-bl"></div>
-                  <Link to="/products" className="hero-card-tr" aria-label="View all products">
+                  {/* Arrow is now decorative — the whole card is the link */}
+                  <div className="hero-card-tr" aria-hidden="true">
                     <ArrowRight />
-                  </Link>
+                  </div>
                   <div className="hero-card-br">Products</div>
                 </div>
-              </div>
+              </Link>
             ))}
 
           </div>

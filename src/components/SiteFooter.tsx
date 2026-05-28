@@ -126,7 +126,7 @@ export function SiteFooter() {
             style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
           />
           {/* Scrim */}
-          <div style={{
+          <div className="footer-scrim" style={{
             position: "absolute", inset: 0,
             background: "linear-gradient(170deg, rgba(0,0,0,0.06) 0%, rgba(0,0,0,0.58) 100%)",
           }} />
@@ -137,17 +137,14 @@ export function SiteFooter() {
         {/* /slideRef */}
 
         {/* SORANA title — inside fixed shell but OUTSIDE slide */}
-        <div ref={soranaRef} style={{
+        <div ref={soranaRef} className="footer-sorana" style={{
           position: "absolute", inset: 0, zIndex: 5,
-          display: "flex", alignItems: "flex-end", justifyContent: "space-between",
-          padding: "0 3rem 12vh 3rem", // Pushed lower and to edges
           pointerEvents: "none", userSelect: "none", opacity: 0,
         }}>
           {["S", "O", "R", "A", "N", "A"].map((letter, i) => (
-            <span key={i} style={{
+            <span key={i} className="footer-sorana-letter" style={{
               display: "inline-block",
               fontFamily: "'Outfit', sans-serif",
-              fontSize: "clamp(4rem, 15vw, 14rem)",
               fontWeight: 700, lineHeight: 0.8,
               background: "linear-gradient(130deg, rgba(10,124,63,0.85) 0%, rgba(232,119,50,0.85) 100%)",
               WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
@@ -157,22 +154,22 @@ export function SiteFooter() {
         </div>
 
         {/* Bottom bar — inside fixed shell but OUTSIDE slide */}
-        <div ref={bottomBarRef} style={{
+        <div ref={bottomBarRef} className="footer-bottom" style={{
           position: "absolute", bottom: 0, left: 0, right: 0, zIndex: 6, opacity: 0,
         }}>
-          <div>
-            <div style={{ width: "100%", margin: "0 auto", display: "flex", alignItems: "center", padding: "1.5rem 3rem", gap: "1rem" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "1.5rem", flex: 1, flexWrap: "wrap", fontSize: "0.85rem", color: "rgba(255,255,255,1)" }}>
-                <span>©{new Date().getFullYear()}, Sorana Glass</span>
+          <div className="footer-bottom-container">
+            <div className="footer-bottom-left">
+              <span className="footer-copyright">©{new Date().getFullYear()}, Sorana Glass</span>
+              <div className="footer-socials">
                 {["Instagram", "LinkedIn", "YouTube"].map(s => (
-                  <a key={s} href="#" className="hover:text-white transition-colors" style={{ color: "rgba(255,255,255,1)" }}>{s}</a>
+                  <a key={s} href="#" className="hover:text-white transition-colors">{s}</a>
                 ))}
               </div>
-              <div style={{ display: "flex", alignItems: "center", gap: "1.5rem", flex: 1, justifyContent: "flex-end", flexWrap: "wrap", fontSize: "0.85rem", color: "rgba(255, 255, 255, 1)" }}>
-                <Link to="/" className="hover:text-white transition-colors" style={{ color: "rgba(255, 255, 255, 1)" }}>Privacy policy</Link>
-                <Link to="/" className="hover:text-white transition-colors" style={{ color: "rgba(255, 255, 255, 1)" }}>Terms & conditions</Link>
-                <span style={{ color: "rgba(255,255,255,1)" }} className="hidden lg:inline">Crafted with precision</span>
-              </div>
+            </div>
+            <div className="footer-bottom-right">
+              <Link to="/" className="footer-privacy hover:text-white transition-colors">Privacy policy</Link>
+              <Link to="/" className="footer-terms hover:text-white transition-colors">Terms & conditions</Link>
+              <span className="footer-crafted hidden lg:inline">Crafted with precision</span>
             </div>
           </div>
         </div>

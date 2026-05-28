@@ -512,6 +512,15 @@
   border-left: 1px solid rgba(255, 255, 255, 0.08);
   border-right: 1px solid rgba(255, 255, 255, 0.08);
   will-change: clip-path;
+  /* Whole card is now a link */
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color 0.25s ease;
+}
+
+.hero-info-card-layer:hover {
+  border-top-color: rgba(232, 119, 50, 0.65);
+  border-bottom-color: rgba(232, 119, 50, 0.65);
 }
 
 /* ── Top Left: Title ── */
@@ -837,4 +846,252 @@
   aspect-ratio: 4/3;
   object-fit: cover;
   opacity: 0;
+}
+
+/* ── Footer ──────────────────────────────────────────────────────────────── */
+.footer-sorana {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 0 3rem 12vh 3rem;
+}
+
+.footer-sorana-letter {
+  font-size: clamp(4rem, 15vw, 14rem);
+}
+
+.footer-bottom-container {
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  padding: 1.5rem 3rem;
+  gap: 1rem;
+}
+
+.footer-bottom-left {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex: 1;
+  flex-wrap: wrap;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 1);
+}
+
+.footer-socials {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.footer-bottom-right {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex: 1;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 1);
+}
+
+/* ============================================================
+   Mobile: stack hero product images top / bottom
+   (desktop keeps the left / right split — no change there)
+   ============================================================ */
+@media (max-width: 768px) {
+  /* Left wipe → becomes the TOP panel, full width, grows downward */
+  .hero-slide-wipe-left {
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    bottom: auto !important;
+    top: 0 !important;
+    max-height: 50vh;
+  }
+  .hero-slide-wipe-left img {
+    top: 0 !important;
+    bottom: auto !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 50vh !important;
+    object-position: center top;
+  }
+
+  /* Right wipe → becomes the BOTTOM panel, full width, grows upward */
+  .hero-slide-wipe-right {
+    right: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    top: auto !important;
+    bottom: 0 !important;
+    max-height: 50vh;
+  }
+  .hero-slide-wipe-right img {
+    bottom: 0 !important;
+    top: auto !important;
+    right: auto !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 50vh !important;
+    object-position: center bottom;
+  }
+
+  /* About section mobile: Video on TOP, Text on BOTTOM */
+  .about-panel {
+    width: 100% !important;
+    height: 50% !important;
+    left: 0 !important;
+    top: auto !important;
+    bottom: 0 !important;
+    padding: 2rem !important;
+  }
+
+  .about-panel-content {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .about-video-wrapper {
+    width: 100% !important;
+    height: 50% !important;
+    right: 0 !important;
+    left: 0 !important;
+    bottom: auto !important;
+    top: 0 !important;
+  }
+
+  .about-panel-title {
+    font-size: 1.75rem !important;
+    margin-bottom: 1rem !important;
+  }
+
+  .about-panel-body {
+    font-size: 0.95rem !important;
+    line-height: 1.5 !important;
+  }
+
+  .about-panel-link {
+    margin-top: 1.5rem !important;
+    font-size: 0.95rem !important;
+  }
+
+  .about-panel-label {
+    margin-bottom: 0.5rem !important;
+    font-size: 0.8rem !important;
+  }
+
+  /* ── Services Section Mobile Overrides ── */
+  .svc-header-mcalpine {
+    padding: 3rem 1.5rem !important;
+    flex-direction: column !important;
+    gap: 1.5rem !important;
+    text-align: center !important;
+  }
+  
+  .svc-title-left,
+  .svc-title-right {
+    font-size: 2.25rem !important;
+  }
+  
+  .svc-header-img-wrapper {
+    width: 85% !important;
+    margin: 0 !important;
+  }
+  
+  .svc-item-name {
+    font-size: 1.4rem !important;
+  }
+  
+  .svc-item-images {
+    left: 1rem !important;
+  }
+  
+  .svc-item-img {
+    height: 36px !important;
+  }
+
+  /* Hide 2nd and 3rd images on mobile */
+  .svc-item-img:nth-child(n+2) {
+    display: none !important;
+  }
+
+  /* Force 1st image to always be visible (overriding GSAP hover logic) */
+  .svc-item-img:first-child {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  /* ── Footer Mobile Overrides ── */
+  .footer-scrim {
+    background: rgba(0, 0, 0, 0.45) !important; /* Slightly lighten bg image */
+  }
+
+  .footer-sorana {
+    align-items: flex-start !important;
+    padding: 15vh 1.5rem 0 1.5rem !important;
+  }
+
+  .footer-sorana-letter {
+    font-size: 15vw !important;
+  }
+
+  .footer-bottom {
+    top: 0 !important; 
+    pointer-events: none; 
+  }
+
+  .footer-bottom-container {
+    padding: 0 !important;
+    height: 100%;
+    position: relative;
+    pointer-events: auto; 
+  }
+
+  /* Socials directly below SORANA, spread out */
+  .footer-socials {
+    position: absolute;
+    top: 28vh; 
+    left: 0;
+    right: 0;
+    justify-content: space-between; /* Spread from start to end */
+    padding: 0 1.5rem; /* Match SORANA padding */
+    width: 100%;
+  }
+
+  .footer-bottom-left,
+  .footer-bottom-right {
+    display: contents !important;
+  }
+
+  /* Bottom Left/Right Placement: Equidistant from the center arrow (48px wide) */
+  .footer-copyright {
+    position: absolute;
+    bottom: 2rem;
+    right: calc(50% + 60px); /* 40px gap from the true center */
+    left: auto;
+    width: auto;
+    padding: 0;
+    text-align: right;
+    font-size: 0.8rem;
+    white-space: nowrap;
+  }
+
+  .footer-privacy {
+    position: absolute;
+    bottom: 2rem;
+    left: calc(50% + 60px); /* 40px gap from the true center */
+    right: auto;
+    width: auto;
+    padding: 0;
+    text-align: left;
+    font-size: 0.8rem;
+    white-space: nowrap;
+  }
+
+  .footer-terms {
+    display: none !important;
+  }
 }
