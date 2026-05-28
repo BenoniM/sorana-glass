@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { ArrowUpLeft, ArrowUpRight, ArrowDownLeft, ArrowDownRight } from "lucide-react";
 
 const baseImages = [
   "https://images.pexels.com/photos/33410957/pexels-photo-33410957.jpeg",
@@ -55,6 +56,7 @@ export function InteractiveGallery() {
   const pos = useRef({ x: 0, y: 0 });
   const isHoveredRef = useRef(false);
   const bounds = useRef({ minX: 0, maxX: 0, minY: 0, maxY: 0 });
+  const activeDirectionRef = useRef<{x: number, y: number} | null>(null);
 
   useEffect(() => {
     const handleResize = () => {
@@ -108,8 +110,20 @@ export function InteractiveGallery() {
 
     let rafId: number;
     const loop = () => {
-      let targetVx = isHoveredRef.current ? 0 : targetVelocity.current.x;
-      let targetVy = isHoveredRef.current ? 0 : targetVelocity.current.y;
+      const isMobile = window.innerWidth < 768;
+      let targetVx = 0;
+      let targetVy = 0;
+
+      if (isMobile) {
+        if (activeDirectionRef.current) {
+          const maxSpeed = 16;
+          targetVx = activeDirectionRef.current.x * maxSpeed;
+          targetVy = activeDirectionRef.current.y * maxSpeed;
+        }
+      } else {
+        targetVx = isHoveredRef.current ? 0 : targetVelocity.current.x;
+        targetVy = isHoveredRef.current ? 0 : targetVelocity.current.y;
+      }
 
       if (document.body.classList.contains("nav-open")) {
         targetVx = 0;
@@ -178,7 +192,7 @@ export function InteractiveGallery() {
               key={i}
               // place-self-center ensures the image sits entirely centered within its grid cell
               // w-full with max-w ensures the image stops growing beyond a certain size, allowing for even MORE gap inside the cell
-              className="group relative overflow-hidden bg-surface shadow-card transition-all duration-500 ease-out hover:scale-110 hover:z-50 hover:shadow-elegant rounded-none aspect-square col-span-1 row-span-1 place-self-center w-full max-w-[150px] sm:max-w-[200px] md:max-w-[280px]"
+              className="group relative overflow-hidden bg-surface shadow-card transition-all duration-500 ease-out hover:scale-110 hover:z-50 hover:shadow-elegant rounded-none aspect-square col-span-1 row-span-1 place-self-center w-48 md:w-full max-w-[250px] sm:max-w-[250px] md:max-w-[280px]"
               onMouseEnter={() => {
                 isHoveredRef.current = true;
               }}
@@ -196,6 +210,46 @@ export function InteractiveGallery() {
             </div>
           );
         })}
+      </div>
+
+      {/* MOBILE CONTROLS (Diagonal Arrows) */}
+      <div className="md:hidden absolute inset-0 pointer-events-none z-50">
+        {/* Top Left (NW) */}
+        <button
+          className="pointer-events-auto absolute top-[12%] left-4 w-16 h-16 bg-[#0A7C3F]/70 backdrop-blur-md text-[#E87732]/80 rounded-full flex items-center justify-center active:scale-95 transition-transform shadow-lg"
+          onPointerDown={() => { activeDirectionRef.current = { x: 1, y: 1 }; }}
+          onPointerUp={() => { activeDirectionRef.current = null; }}
+          onPointerLeave={() => { activeDirectionRef.current = null; }}
+        >
+          <ArrowUpLeft size={32} />
+        </button>
+        {/* Top Right (NE) */}
+        <button
+          className="pointer-events-auto absolute top-[12%] right-4 w-16 h-16 bg-[#0A7C3F]/70 backdrop-blur-md text-[#E87732]/80 rounded-full flex items-center justify-center active:scale-95 transition-transform shadow-lg"
+          onPointerDown={() => { activeDirectionRef.current = { x: -1, y: 1 }; }}
+          onPointerUp={() => { activeDirectionRef.current = null; }}
+          onPointerLeave={() => { activeDirectionRef.current = null; }}
+        >
+          <ArrowUpRight size={32} />
+        </button>
+        {/* Bottom Left (SW) */}
+        <button
+          className="pointer-events-auto absolute bottom-[15%] left-4 w-16 h-16 bg-[#0A7C3F]/70 backdrop-blur-md text-[#E87732]/80 rounded-full flex items-center justify-center active:scale-95 transition-transform shadow-lg"
+          onPointerDown={() => { activeDirectionRef.current = { x: 1, y: -1 }; }}
+          onPointerUp={() => { activeDirectionRef.current = null; }}
+          onPointerLeave={() => { activeDirectionRef.current = null; }}
+        >
+          <ArrowDownLeft size={32} />
+        </button>
+        {/* Bottom Right (SE) */}
+        <button
+          className="pointer-events-auto absolute bottom-[15%] right-4 w-16 h-16 bg-[#0A7C3F]/70 backdrop-blur-md text-[#E87732]/80 rounded-full flex items-center justify-center active:scale-95 transition-transform shadow-lg"
+          onPointerDown={() => { activeDirectionRef.current = { x: -1, y: -1 }; }}
+          onPointerUp={() => { activeDirectionRef.current = null; }}
+          onPointerLeave={() => { activeDirectionRef.current = null; }}
+        >
+          <ArrowDownRight size={32} />
+        </button>
       </div>
 
     </div>
