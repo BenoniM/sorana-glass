@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Award, ShieldCheck, HeartHandshake, Zap, Users } from "lucide-react";
 
 // Leafy branch SVG component
@@ -82,6 +82,87 @@ const VALUES = [
   },
 ];
 
+function CoreValueCard({ val }: { val: typeof VALUES[0] }) {
+  const Icon = val.icon;
+  const [isActive, setIsActive] = useState(false);
+
+  return (
+    <div 
+      className="group flex flex-nowrap items-center justify-center gap-2 sm:gap-4 md:gap-6 cursor-pointer w-full max-w-full overflow-hidden"
+      onClick={() => {
+        if (typeof window !== 'undefined' && window.innerWidth < 768) {
+          setIsActive(!isActive);
+        }
+      }}
+    >
+      {/* LAYOUT 1: Icon -> Text -> Image -> Num */}
+      {val.layout === "text-img" && (
+        <>
+          <Icon className={`w-6 h-6 sm:w-8 sm:h-8 md:w-8 md:h-8 shrink-0 ${val.colorA} transition-transform md:group-hover:scale-110 ${isActive ? 'scale-110' : ''}`} strokeWidth={2} />
+          <h3 className="font-display text-3xl sm:text-4xl md:text-6xl font-medium tracking-tight text-foreground whitespace-nowrap">
+            {val.title}
+          </h3>
+          <div className={`shrink-0 overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] shadow-xl h-14 sm:h-20 md:h-24 ${isActive ? 'w-24 sm:w-32' : 'w-12 sm:w-16 md:w-20'} md:group-hover:w-40`}>
+            <img src={val.image} alt={val.title} className={`w-full h-full object-cover transition-transform duration-700 md:group-hover:scale-100 ${isActive ? 'scale-100' : 'scale-110'}`} />
+          </div>
+          <span className={`font-display text-2xl sm:text-3xl md:text-5xl font-light ${val.colorN} opacity-80 whitespace-nowrap`}>
+            ({val.id})
+          </span>
+        </>
+      )}
+
+      {/* LAYOUT 2: Icon -> Image -> Text -> Num */}
+      {val.layout === "img-text" && (
+        <>
+          <Icon className={`w-6 h-6 sm:w-8 sm:h-8 md:w-8 md:h-8 shrink-0 ${val.colorA} transition-transform md:group-hover:scale-110 ${isActive ? 'scale-110' : ''}`} strokeWidth={2} />
+          <div className={`shrink-0 overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] shadow-xl h-14 sm:h-20 md:h-24 ${isActive ? 'w-24 sm:w-32' : 'w-12 sm:w-16 md:w-20'} md:group-hover:w-40`}>
+            <img src={val.image} alt={val.title} className={`w-full h-full object-cover transition-transform duration-700 md:group-hover:scale-100 ${isActive ? 'scale-100' : 'scale-110'}`} />
+          </div>
+          <h3 className="font-display text-3xl sm:text-4xl md:text-6xl font-medium tracking-tight text-foreground whitespace-nowrap">
+            {val.title}
+          </h3>
+          <span className={`font-display text-2xl sm:text-3xl md:text-5xl font-light ${val.colorN} opacity-80 whitespace-nowrap`}>
+            ({val.id})
+          </span>
+        </>
+      )}
+
+      {/* LAYOUT 3: Icon -> Text -> Num -> Image */}
+      {val.layout === "text-num-img" && (
+        <>
+          <Icon className={`w-6 h-6 sm:w-8 sm:h-8 md:w-8 md:h-8 shrink-0 ${val.colorA} transition-transform md:group-hover:scale-110 ${isActive ? 'scale-110' : ''}`} strokeWidth={2} />
+          <h3 className="font-display text-3xl sm:text-4xl md:text-6xl font-medium tracking-tight text-foreground whitespace-nowrap">
+            {val.title}
+          </h3>
+          <span className={`font-display text-2xl sm:text-3xl md:text-5xl font-light ${val.colorN} opacity-80 whitespace-nowrap`}>
+            ({val.id})
+          </span>
+          <div className={`shrink-0 overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] shadow-xl h-14 sm:h-20 md:h-24 ${isActive ? 'w-24 sm:w-32' : 'w-12 sm:w-16 md:w-20'} md:group-hover:w-40`}>
+            <img src={val.image} alt={val.title} className={`w-full h-full object-cover transition-transform duration-700 md:group-hover:scale-100 ${isActive ? 'scale-100' : 'scale-110'}`} />
+          </div>
+        </>
+      )}
+
+      {/* LAYOUT 4: Image -> Icon -> Text -> Num */}
+      {val.layout === "img-icon-text" && (
+        <>
+          <div className={`shrink-0 overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] shadow-xl h-14 sm:h-20 md:h-24 ${isActive ? 'w-24 sm:w-32' : 'w-12 sm:w-16 md:w-20'} md:group-hover:w-40`}>
+            <img src={val.image} alt={val.title} className={`w-full h-full object-cover transition-transform duration-700 md:group-hover:scale-100 ${isActive ? 'scale-100' : 'scale-110'}`} />
+          </div>
+          <Icon className={`w-6 h-6 sm:w-8 sm:h-8 md:w-8 md:h-8 shrink-0 ${val.colorA} transition-transform md:group-hover:scale-110 ${isActive ? 'scale-110' : ''}`} strokeWidth={2} />
+          <h3 className="font-display text-3xl sm:text-4xl md:text-6xl font-medium tracking-tight text-foreground whitespace-nowrap">
+            {val.title}
+          </h3>
+          <span className={`font-display text-2xl sm:text-3xl md:text-5xl font-light ${val.colorN} opacity-80 whitespace-nowrap`}>
+            ({val.id})
+          </span>
+        </>
+      )}
+
+    </div>
+  );
+}
+
 export function CoreValuesSection() {
   return (
     <section className="relative flex flex-col items-center justify-center pt-32 pb-16">
@@ -92,81 +173,9 @@ export function CoreValuesSection() {
         </h2>
 
         <div className="flex flex-col items-center justify-center gap-12 md:gap-16">
-          {VALUES.map((val) => {
-            const Icon = val.icon;
-
-            return (
-              <div 
-                key={val.id} 
-                className="group flex flex-wrap items-center justify-center gap-6 cursor-pointer"
-              >
-                {/* LAYOUT 1: Icon -> Text -> Image -> Num */}
-                {val.layout === "text-img" && (
-                  <>
-                    <Icon className={`w-8 h-8 ${val.colorA} transition-transform group-hover:scale-110`} strokeWidth={2} />
-                    <h3 className="font-display text-5xl md:text-6xl font-medium tracking-tight text-foreground">
-                      {val.title}
-                    </h3>
-                    <div className="w-16 h-20 md:w-20 md:h-24 overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] group-hover:w-32 md:group-hover:w-40 shadow-xl">
-                      <img src={val.image} alt={val.title} className="w-full h-full object-cover scale-110 group-hover:scale-100 transition-transform duration-700" />
-                    </div>
-                    <span className={`font-display text-4xl md:text-5xl font-light ${val.colorN} opacity-80`}>
-                      ({val.id})
-                    </span>
-                  </>
-                )}
-
-                {/* LAYOUT 2: Icon -> Image -> Text -> Num */}
-                {val.layout === "img-text" && (
-                  <>
-                    <Icon className={`w-8 h-8 ${val.colorA} transition-transform group-hover:scale-110`} strokeWidth={2} />
-                    <div className="w-16 h-20 md:w-20 md:h-24 overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] group-hover:w-32 md:group-hover:w-40 shadow-xl">
-                      <img src={val.image} alt={val.title} className="w-full h-full object-cover scale-110 group-hover:scale-100 transition-transform duration-700" />
-                    </div>
-                    <h3 className="font-display text-5xl md:text-6xl font-medium tracking-tight text-foreground">
-                      {val.title}
-                    </h3>
-                    <span className={`font-display text-4xl md:text-5xl font-light ${val.colorN} opacity-80`}>
-                      ({val.id})
-                    </span>
-                  </>
-                )}
-
-                {/* LAYOUT 3: Icon -> Text -> Num -> Image */}
-                {val.layout === "text-num-img" && (
-                  <>
-                    <Icon className={`w-8 h-8 ${val.colorA} transition-transform group-hover:scale-110`} strokeWidth={2} />
-                    <h3 className="font-display text-5xl md:text-6xl font-medium tracking-tight text-foreground">
-                      {val.title}
-                    </h3>
-                    <span className={`font-display text-4xl md:text-5xl font-light ${val.colorN} opacity-80`}>
-                      ({val.id})
-                    </span>
-                    <div className="w-16 h-20 md:w-20 md:h-24 overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] group-hover:w-32 md:group-hover:w-40 shadow-xl">
-                      <img src={val.image} alt={val.title} className="w-full h-full object-cover scale-110 group-hover:scale-100 transition-transform duration-700" />
-                    </div>
-                  </>
-                )}
-
-                {/* LAYOUT 4: Image -> Icon -> Text -> Num */}
-                {val.layout === "img-icon-text" && (
-                  <>
-                    <div className="w-16 h-20 md:w-20 md:h-24 overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] group-hover:w-32 md:group-hover:w-40 shadow-xl">
-                      <img src={val.image} alt={val.title} className="w-full h-full object-cover scale-110 group-hover:scale-100 transition-transform duration-700" />
-                    </div>
-                    <Icon className={`w-8 h-8 ${val.colorA} transition-transform group-hover:scale-110`} strokeWidth={2} />
-                    <h3 className="font-display text-5xl md:text-6xl font-medium tracking-tight text-foreground">
-                      {val.title}
-                    </h3>
-                    <span className={`font-display text-4xl md:text-5xl font-light ${val.colorN} opacity-80`}>
-                      ({val.id})
-                    </span>
-                  </>
-                )}
-
-              </div>
-            );
-          })}
+          {VALUES.map((val) => (
+            <CoreValueCard key={val.id} val={val} />
+          ))}
         </div>
       </div>
     </section>

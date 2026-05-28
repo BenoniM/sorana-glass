@@ -62,8 +62,8 @@ const RENDER_FRAG_SRC = `
 `;
 
 function setupWebGL(
-  canvas: HTMLCanvasElement, 
-  imageSrc: string, 
+  canvas: HTMLCanvasElement,
+  imageSrc: string,
   mouseRef: { current: [number, number] },
   prevMouseRef: { current: [number, number] },
   velocityRef: { current: [number, number] }
@@ -83,7 +83,7 @@ function setupWebGL(
   };
   const mkProg = (vert: string, frag: string) => {
     const p = gl.createProgram()!;
-    gl.attachShader(p, mkShader(gl.VERTEX_SHADER,   vert));
+    gl.attachShader(p, mkShader(gl.VERTEX_SHADER, vert));
     gl.attachShader(p, mkShader(gl.FRAGMENT_SHADER, frag));
     gl.linkProgram(p);
     return p;
@@ -109,23 +109,23 @@ function setupWebGL(
   const W = canvas.width;
   const H = canvas.height;
 
-  const dispProg   = mkProg(VERT_SRC, DISP_FRAG_SRC);
+  const dispProg = mkProg(VERT_SRC, DISP_FRAG_SRC);
   const renderProg = mkProg(VERT_SRC, RENDER_FRAG_SRC);
 
   const neutral = new Uint8Array(W * H * 4);
   for (let i = 0; i < neutral.length; i += 4) {
-    neutral[i] = 128; neutral[i+1] = 128; neutral[i+2] = 0; neutral[i+3] = 255;
+    neutral[i] = 128; neutral[i + 1] = 128; neutral[i + 2] = 0; neutral[i + 3] = 255;
   }
 
-  const tex0     = mkTex(W, H, neutral);
-  const tex1     = mkTex(W, H, neutral);
-  const imgTex   = mkTex(2, 2);
-  const fbo0     = mkFbo(tex0);
-  const fbo1     = mkFbo(tex1);
+  const tex0 = mkTex(W, H, neutral);
+  const tex1 = mkTex(W, H, neutral);
+  const imgTex = mkTex(2, 2);
+  const fbo0 = mkFbo(tex0);
+  const fbo1 = mkFbo(tex1);
 
   const quad = gl.createBuffer()!;
   gl.bindBuffer(gl.ARRAY_BUFFER, quad);
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
 
   const img = new Image();
   img.crossOrigin = "anonymous";
@@ -147,7 +147,7 @@ function setupWebGL(
 
   const draw = () => {
     if (!state.active) return;
-    
+
     // Velocity update
     const rawVx = mouseRef.current[0] - prevMouseRef.current[0];
     const rawVy = mouseRef.current[1] - prevMouseRef.current[1];
@@ -157,7 +157,7 @@ function setupWebGL(
     prevMouseRef.current[1] = mouseRef.current[1];
 
     const aspect = W / H;
-    const pong   = 1 - state.ping;
+    const pong = 1 - state.ping;
 
     // Pass 1: update displacement
     gl.bindFramebuffer(gl.FRAMEBUFFER, state.ping === 0 ? fbo1 : fbo0);
@@ -172,7 +172,7 @@ function setupWebGL(
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, state.ping === 0 ? tex0 : tex1);
     gl.uniform1i(gl.getUniformLocation(dispProg, 'uPrev'), 0);
-    gl.uniform2f(gl.getUniformLocation(dispProg, 'uMouse'), mouseRef.current[0], mouseRef.current[1]); 
+    gl.uniform2f(gl.getUniformLocation(dispProg, 'uMouse'), mouseRef.current[0], mouseRef.current[1]);
     gl.uniform2f(gl.getUniformLocation(dispProg, 'uVelocity'), velocityRef.current[0], velocityRef.current[1]);
     gl.uniform1f(gl.getUniformLocation(dispProg, 'uAspect'), aspect);
 
@@ -230,7 +230,7 @@ const STEPS = [
 export function StorySection() {
   const sectionRef = useRef<HTMLElement>(null);
   const stickyRef = useRef<HTMLDivElement>(null);
-  
+
   // Story Refs
   const imageLayersRef = useRef<(HTMLDivElement | null)[]>([]);
   const textLayersRef = useRef<(HTMLParagraphElement | null)[]>([]);
@@ -262,7 +262,7 @@ export function StorySection() {
     const ctx = gsap.context(() => {
       // Total steps = 3 steps of story + 1 step of mission/vision = 4 steps total (indices 0,1,2,3)
       // so total steps integer = 4, but let's call the total segments = STEPS.length
-      const totalSegments = STEPS.length; 
+      const totalSegments = STEPS.length;
 
       // Ensure elements are hidden initially except the first one
       gsap.set(textLayersRef.current.slice(1), { opacity: 0, y: 20 });
@@ -271,9 +271,9 @@ export function StorySection() {
       function getClip(i: number, sp: number) {
         let rightClip = 100, leftClip = 0;
         const revealStart = (i - 1) / totalSegments;
-        const revealEnd   = i / totalSegments;
-        const hideStart   = i / totalSegments;
-        const hideEnd     = (i + 1) / totalSegments;
+        const revealEnd = i / totalSegments;
+        const hideStart = i / totalSegments;
+        const hideEnd = (i + 1) / totalSegments;
 
         const isLastImage = i === STEPS.length - 1;
 
@@ -299,7 +299,7 @@ export function StorySection() {
             rightClip = 0;
             leftClip = gsap.utils.clamp(0, 1, gsap.parseEase('power2.inOut')(p)) * 100;
           } else if (isLastImage && sp > revealEnd) {
-             rightClip = 0; leftClip = 0; // Last image stays unclipped
+            rightClip = 0; leftClip = 0; // Last image stays unclipped
           }
         }
         return { rightClip, leftClip };
@@ -308,7 +308,7 @@ export function StorySection() {
       ScrollTrigger.create({
         trigger: sectionRef.current,
         start: 'top top',
-        end: 'bottom 100%', 
+        end: 'bottom 100%',
         scrub: 1.2,
         snap: {
           snapTo: (value) => {
@@ -344,21 +344,21 @@ export function StorySection() {
             // Crossfade Text and Index based on progress
             const stepStart = Math.max(0, (i - 0.5) / totalSegments);
             const stepEnd = Math.min(1, (i + 0.5) / totalSegments);
-            
+
             let opacity = 0;
             let y = 20;
 
             if (sp >= stepStart && sp <= stepEnd) {
-                const center = i / totalSegments;
-                const dist = Math.abs(sp - center);
-                const maxDist = 0.5 / totalSegments;
-                opacity = 1 - (dist / maxDist);
-                y = 20 * (dist / maxDist) * (sp < center ? 1 : -1);
+              const center = i / totalSegments;
+              const dist = Math.abs(sp - center);
+              const maxDist = 0.5 / totalSegments;
+              opacity = 1 - (dist / maxDist);
+              y = 20 * (dist / maxDist) * (sp < center ? 1 : -1);
             }
 
             opacity = gsap.utils.clamp(0, 1, opacity);
             if (opacity === 0) {
-              y = sp < (i/totalSegments) ? 20 : -20;
+              y = sp < (i / totalSegments) ? 20 : -20;
             }
 
             if (textLayersRef.current[i]) {
@@ -385,18 +385,27 @@ export function StorySection() {
           const mvStart = (totalSegments - 1) / totalSegments;
           const mvEnd = 1;
           let mvProgress = 0;
-          
+
           if (sp >= mvEnd) mvProgress = 1;
           else if (sp > mvStart) mvProgress = (sp - mvStart) / (mvEnd - mvStart);
-          
+
           const mvEased = gsap.utils.clamp(0, 1, gsap.parseEase("power2.inOut")(mvProgress));
-          
+          const isMobile = window.innerWidth < 768;
+
           if (leftPanelRef.current) {
-            leftPanelRef.current.style.clipPath = `inset(0 0 0 ${100 - mvEased * 100}%)`;
+            if (isMobile) {
+              leftPanelRef.current.style.clipPath = `inset(${100 - mvEased * 100}% 0 0 0)`;
+            } else {
+              leftPanelRef.current.style.clipPath = `inset(0 0 0 ${100 - mvEased * 100}%)`;
+            }
             leftPanelRef.current.style.pointerEvents = mvProgress > 0.5 ? 'auto' : 'none';
           }
           if (rightPanelRef.current) {
-            rightPanelRef.current.style.clipPath = `inset(0 ${100 - mvEased * 100}% 0 0)`;
+            if (isMobile) {
+              rightPanelRef.current.style.clipPath = `inset(0 0 ${100 - mvEased * 100}% 0)`;
+            } else {
+              rightPanelRef.current.style.clipPath = `inset(0 ${100 - mvEased * 100}% 0 0)`;
+            }
             rightPanelRef.current.style.pointerEvents = mvProgress > 0.5 ? 'auto' : 'none';
           }
 
@@ -421,7 +430,7 @@ export function StorySection() {
   useEffect(() => {
     const leftCanvas = leftCanvasRef.current;
     const rightCanvas = rightCanvasRef.current;
-    
+
     const handleResize = (entries: ResizeObserverEntry[], initFn: () => void, stateRef: React.MutableRefObject<any>, canvas: HTMLCanvasElement | null) => {
       if (!canvas) return;
       for (const entry of entries) {
@@ -484,7 +493,7 @@ export function StorySection() {
       style={{ height: `${(STEPS.length + 1) * 100}vh` }}
     >
       <div ref={stickyRef} className="sticky top-0 h-screen w-full overflow-hidden flex flex-col">
-        
+
         {/* ── Background Images Layer (Story) ── */}
         <div className="absolute inset-0 z-0 pointer-events-none">
           {STEPS.map((step, i) => (
@@ -504,102 +513,102 @@ export function StorySection() {
         <div className="relative z-10 w-full h-full flex flex-col pointer-events-none">
           {/* Top Half */}
           <div className="flex-1 relative">
-             <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 pointer-events-auto">
-                <span className="text-[10px] md:text-xs uppercase tracking-[0.2em] font-medium text-white/80">Scroll to Explore</span>
-                <ArrowDown size={16} className="text-white/80 animate-bounce" />
-             </div>
-             
-             {/* Left side 01 label above the line */}
-             <div className="absolute bottom-4 left-6 md:left-16 h-8 w-8">
-               {STEPS.map((step, i) => (
-                 <span
-                   key={`index-${i}`}
-                   ref={el => { indexLayersRef.current[i] = el; }}
-                   className="absolute bottom-0 left-0 text-sm font-bold text-white tracking-widest"
-                 >
-                   {step.index}
-                 </span>
-               ))}
-             </div>
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 pointer-events-auto">
+              <span className="text-[10px] md:text-xs uppercase tracking-[0.2em] font-medium text-white/80">Scroll to Explore</span>
+              <ArrowDown size={16} className="text-white/80 animate-bounce" />
+            </div>
+
+            {/* Left side 01 label above the line */}
+            <div className="absolute bottom-4 left-6 md:left-16 h-8 w-8">
+              {STEPS.map((step, i) => (
+                <span
+                  key={`index-${i}`}
+                  ref={el => { indexLayersRef.current[i] = el; }}
+                  className="absolute bottom-0 left-0 text-sm font-bold text-white tracking-widest"
+                >
+                  {step.index}
+                </span>
+              ))}
+            </div>
           </div>
 
           {/* Middle Load Bar */}
           <div className="w-full h-[1.5px] bg-white/20 relative shrink-0">
-             <div 
-                ref={progressBarRef}
-                className="absolute top-0 left-0 w-full h-full bg-white origin-center" 
-                style={{ transform: 'scaleX(0)', willChange: 'transform' }} 
-             />
+            <div
+              ref={progressBarRef}
+              className="absolute top-0 left-0 w-full h-full bg-white origin-center"
+              style={{ transform: 'scaleX(0)', willChange: 'transform' }}
+            />
           </div>
 
           {/* Bottom Half */}
           <div className="flex-1 relative flex flex-col justify-start pt-8 px-6 md:px-16">
-             <div className="flex flex-col md:flex-row w-full gap-8 md:gap-16">
-               <div className="w-full md:w-1/4">
-                 <h2 className="text-xl md:text-2xl font-display font-semibold tracking-wide text-white">Our Story</h2>
-               </div>
-               <div className="w-full md:w-1/2 relative min-h-[200px]">
-                 <div className="max-w-2xl mx-auto relative w-full">
-                   {STEPS.map((step, i) => (
-                     <p
-                       key={`text-${i}`}
-                       ref={el => { textLayersRef.current[i] = el; }}
-                       className="absolute top-0 left-0 w-full text-center text-lg md:text-xl leading-relaxed text-white/90 font-light"
-                     >
-                       {step.text}
-                     </p>
-                   ))}
-                 </div>
-               </div>
-               <div className="hidden md:block md:w-1/4"></div>
-             </div>
+            <div className="flex flex-col md:flex-row w-full gap-8 md:gap-16">
+              <div className="w-full md:w-1/4">
+                <h2 className="text-xl md:text-2xl font-display font-semibold tracking-wide text-white">Our Story</h2>
+              </div>
+              <div className="w-full md:w-1/2 relative min-h-[200px]">
+                <div className="max-w-2xl mx-auto relative w-full">
+                  {STEPS.map((step, i) => (
+                    <p
+                      key={`text-${i}`}
+                      ref={el => { textLayersRef.current[i] = el; }}
+                      className="absolute top-0 left-0 w-full text-center text-lg md:text-xl leading-relaxed text-white/90 font-light"
+                    >
+                      {step.text}
+                    </p>
+                  ))}
+                </div>
+              </div>
+              <div className="hidden md:block md:w-1/4"></div>
+            </div>
           </div>
         </div>
 
         {/* ── Mission/Vision Overlay Layer ── */}
-        <div className="absolute inset-0 z-30 flex overflow-hidden pointer-events-none">
-          
+        <div className="absolute inset-0 z-30 flex flex-col md:flex-row overflow-hidden pointer-events-none">
+
           {/* Left Panel: Mission */}
-          <div 
+          <div
             ref={leftPanelRef}
-            className="relative w-1/2 h-full cursor-crosshair overflow-hidden"
-            style={{ clipPath: 'inset(0 0 0 100%)', pointerEvents: 'none' }}
+            className="relative w-full h-1/2 md:w-1/2 md:h-full cursor-crosshair overflow-hidden"
+            style={{ clipPath: typeof window !== 'undefined' && window.innerWidth < 768 ? 'inset(100% 0 0 0)' : 'inset(0 0 0 100%)', pointerEvents: 'none' }}
           >
             <canvas ref={leftCanvasRef} className="absolute inset-0 w-full h-full" />
             <div className="absolute inset-0 bg-black/50 backdrop-blur-[2px] pointer-events-none" />
-            
+
             <div className="absolute inset-0 flex flex-col justify-center items-center px-12 md:px-24 pointer-events-none text-center">
-               <div className="text-white/90 max-w-lg">
-                  <p className="text-sm tracking-[0.2em] uppercase font-bold text-accent mb-4">Mission</p>
-                  <h3 className="text-2xl md:text-4xl font-display font-medium leading-tight text-white mb-6">
-                    Driving architectural excellence through quality.
-                  </h3>
-                  <p className="text-white/80 leading-relaxed font-light text-lg">
-                    To provide high-quality glass products and services to construction and automotive industries through efficient production, reliable delivery and customer-focused solutions.
-                  </p>
-               </div>
+              <div className="text-white/90 max-w-lg">
+                <p className="text-sm tracking-[0.2em] uppercase font-bold text-accent mb-4">Mission</p>
+                <h3 className="text-2xl md:text-4xl font-display font-medium leading-tight text-white mb-6">
+                  Driving architectural excellence through quality.
+                </h3>
+                <p className="text-white/80 leading-relaxed font-light text-lg">
+                  To provide high-quality glass products and services to construction and automotive industries through efficient production, reliable delivery and customer-focused solutions.
+                </p>
+              </div>
             </div>
           </div>
 
           {/* Right Panel: Vision */}
-          <div 
+          <div
             ref={rightPanelRef}
-            className="relative w-1/2 h-full cursor-crosshair overflow-hidden"
-            style={{ clipPath: 'inset(0 100% 0 0)', pointerEvents: 'none' }}
+            className="relative w-full h-1/2 md:w-1/2 md:h-full cursor-crosshair overflow-hidden"
+            style={{ clipPath: typeof window !== 'undefined' && window.innerWidth < 768 ? 'inset(0 0 100% 0)' : 'inset(0 100% 0 0)', pointerEvents: 'none' }}
           >
             <canvas ref={rightCanvasRef} className="absolute inset-0 w-full h-full" />
             <div className="absolute inset-0 bg-black/50 backdrop-blur-[2px] pointer-events-none" />
-            
+
             <div className="absolute inset-0 flex flex-col justify-center items-center px-12 md:px-24 pointer-events-none text-center">
-               <div className="text-white/90 max-w-lg">
-                  <p className="text-sm tracking-[0.2em] uppercase font-bold text-accent mb-4">Vision</p>
-                  <h3 className="text-2xl md:text-4xl font-display font-medium leading-tight text-white mb-6">
-                    Shaping the skylines of tomorrow.
-                  </h3>
-                  <p className="text-white/80 leading-relaxed font-light text-lg">
-                    To become one of the leading and most advanced glass processing companies in Africa — recognized for quality, innovation and reliability.
-                  </p>
-               </div>
+              <div className="text-white/90 max-w-lg">
+                <p className="text-sm tracking-[0.2em] uppercase font-bold text-accent mb-4">Vision</p>
+                <h3 className="text-2xl md:text-4xl font-display font-medium leading-tight text-white mb-6">
+                  Shaping the skylines of tomorrow.
+                </h3>
+                <p className="text-white/80 leading-relaxed font-light text-lg">
+                  To become one of the leading and most advanced glass processing companies in Africa — recognized for quality, innovation and reliability.
+                </p>
+              </div>
             </div>
           </div>
 
