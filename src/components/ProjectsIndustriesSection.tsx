@@ -240,7 +240,7 @@ export function ProjectsIndustriesSection() {
             <div
               key={ind.name}
               ref={el => { cardRefs.current[i] = el; }}
-              className="h-[100vh] flex flex-col items-center justify-center relative w-full px-4"
+              className="h-[60vh] md:h-[100vh] flex flex-col items-center justify-center relative w-full px-4"
             >
               <ZoomCard image={ind.image} alt={ind.name} />
 

@@ -79,9 +79,11 @@ interface GridItem {
   cardIdx: number;
   col: number; // 1-5
   row: number; // 1-8
+  colMobile?: number; // 1-3
+  rowMobile?: number; // 1-12
 }
 
-const GRID: GridItem[] = [
+const BASE_GRID: GridItem[] = [
   // Row 1 — col 4 empty (4 imgs)
   { cardIdx: 0, col: 1, row: 1 }, // Tempered
   { cardIdx: 9, col: 2, row: 1 }, // Shower
@@ -126,6 +128,40 @@ const GRID: GridItem[] = [
   { cardIdx: 17, col: 5, row: 8 }, // Auto Glass
 ];
 
+const MOBILE_PATTERN = [
+  [1, 2], // Row 1 (2 imgs)
+  [2, 3], // Row 2 (2 imgs)
+  [1, 2, 3], // Row 3 (3 imgs)
+  [1, 3], // Row 4 (2 imgs)
+  [1, 2], // Row 5 (2 imgs)
+  [2, 3], // Row 6 (2 imgs)
+  [1, 2, 3], // Row 7 (3 imgs)
+  [1, 3], // Row 8 (2 imgs)
+  [1, 2], // Row 9 (2 imgs)
+  [2, 3], // Row 10 (2 imgs)
+  [1, 2, 3], // Row 11 (3 imgs)
+  [1, 3], // Row 12 (2 imgs)
+];
+
+const GRID: GridItem[] = [];
+let mobilePatternIndex = 0;
+let itemsInCurrentMobileRow = 0;
+
+BASE_GRID.forEach((item) => {
+  const currentRowPattern = MOBILE_PATTERN[mobilePatternIndex];
+  GRID.push({
+    ...item,
+    colMobile: currentRowPattern[itemsInCurrentMobileRow],
+    rowMobile: mobilePatternIndex + 1,
+  });
+  
+  itemsInCurrentMobileRow++;
+  if (itemsInCurrentMobileRow >= currentRowPattern.length) {
+    itemsInCurrentMobileRow = 0;
+    mobilePatternIndex++;
+  }
+});
+
 function Products() {
   // The WebGLGallery component handles all scroll distortion automatically
 
@@ -167,7 +203,7 @@ function Products() {
       </section>
 
       {/* ── Gallery Section ────────────────────────────────────────── */}
-      <section className="bg-background" style={{ paddingBottom: "800px" }}>
+      <section className="bg-background pb-[600px] md:pb-[800px]">
         {/* Section header */}
         <div className="text-center pt-24 pb-16 px-6">
           <span className="block text-[10px] font-bold uppercase tracking-[0.22em] text-[#0A7C3F] mb-4">
@@ -188,27 +224,48 @@ function Products() {
         {/*
          * ── Gallery grid ─────────────────────────────────────────────
          */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(5, 1fr)",
-            gridTemplateRows: "repeat(8, auto)",
-            columnGap: "20px",
-            rowGap: "130px",
-            padding: "0 28px",
-            alignItems: "start",
-            overflow: "visible",
-          }}
-        >
-          {GRID.map(({ cardIdx, col, row }) => {
+        <style>{`
+          .product-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(12, auto);
+            column-gap: 12px;
+            row-gap: 60px;
+            padding: 0 16px;
+            align-items: start;
+            overflow: visible;
+          }
+          .product-grid-item {
+            grid-column: var(--col-mobile);
+            grid-row: var(--row-mobile);
+          }
+          @media (min-width: 768px) {
+            .product-grid {
+              grid-template-columns: repeat(5, 1fr);
+              grid-template-rows: repeat(8, auto);
+              column-gap: 20px;
+              row-gap: 130px;
+              padding: 0 28px;
+            }
+            .product-grid-item {
+              grid-column: var(--col-desktop);
+              grid-row: var(--row-desktop);
+            }
+          }
+        `}</style>
+        <div className="product-grid">
+          {GRID.map(({ cardIdx, col, row, colMobile, rowMobile }) => {
             const c = CARDS[cardIdx];
             return (
               <article
                 key={cardIdx}
+                className="product-grid-item"
                 style={{
-                  gridColumn: col,
-                  gridRow: row,
-                }}
+                  '--col-desktop': col,
+                  '--row-desktop': row,
+                  '--col-mobile': colMobile,
+                  '--row-mobile': rowMobile,
+                } as React.CSSProperties}
               >
                 {/* Title above image */}
                 <div className="gallery-text-wrapper" style={{ marginBottom: "9px" }}>

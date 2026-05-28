@@ -140,12 +140,12 @@ function Projects() {
               Trusted across Ethiopia's most demanding sectors.
             </h1>
 
-            <div className="relative p-2 md:p-3 bg-[#0A7C3F]/30 backdrop-blur-md border border-white/20 shadow-2xl mb-10 w-5xl max-w-5xl mx-auto">
+            <div className="relative p-2 md:p-3 bg-[#0A7C3F]/30 backdrop-blur-md border border-white/20 shadow-2xl mb-10 w-full max-w-5xl mx-auto">
               <div className="p-1 rounded-sm">
                 <img 
                   src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80" 
                   alt="Glass Projects" 
-                  className="w-full aspect-[42/9] object-cover opacity-95" 
+                  className="w-full aspect-[16/9] md:aspect-[42/9] object-cover opacity-95" 
                 />
               </div>
             </div>
