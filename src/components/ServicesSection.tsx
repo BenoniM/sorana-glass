@@ -211,7 +211,7 @@ export function ServicesSection() {
 
           {/* ── Split header ──────────────────────────────────────── */}
           <div className="svc-header-mcalpine">
-            <h2 className="svc-title-left text-white" id="svc-heading">
+            <h2 className="svc-title-left text-black" id="svc-heading">
               Services
             </h2>
             <div className="svc-header-img-wrapper">
@@ -221,7 +221,7 @@ export function ServicesSection() {
                 className="svc-header-img"
               />
             </div>
-            <h2 className="svc-title-right text-white">Catalogue</h2>
+            <h2 className="svc-title-right text-black">Catalogue</h2>
           </div>
 
           <div className="svc-carousel-block">
@@ -233,7 +233,7 @@ export function ServicesSection() {
                 fontFamily: "var(--font-display)",
                 fontSize: "11px",
                 letterSpacing: "0.14em",
-                color: "rgba(255,255,255,0.45)",
+                color: "rgba(0, 0, 0, 0.45)",
               }}
             >
               {String(selectedIndex + 1).padStart(2, "0")} /{" "}
@@ -263,7 +263,7 @@ export function ServicesSection() {
                   height="18"
                   viewBox="0 0 18 18"
                   fill="none"
-                  stroke="#ffffff"
+                  stroke="#000000"
                   strokeWidth="2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -293,7 +293,7 @@ export function ServicesSection() {
                   height="18"
                   viewBox="0 0 18 18"
                   fill="none"
-                  stroke="#ffffff"
+                  stroke="#000000"
                   strokeWidth="2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
