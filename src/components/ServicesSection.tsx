@@ -107,10 +107,9 @@ export function ServicesSection() {
     const ctx = gsap.context(() => {
       gsap.fromTo(
         boxRef.current,
-        { y: 200, width: "60%" },
+        { y: 200 },
         {
           y: 0,
-          width: "100%",
           ease: "none",
           scrollTrigger: {
             trigger: sectionRef.current,

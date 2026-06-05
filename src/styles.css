@@ -707,10 +707,11 @@
   background: transparent;
 }
 
-/* The expanding box that starts narrow and expands to full screen */
+/* The box that slides up over the about section */
 .svc-box {
   position: relative;
   margin: 0 auto;
+  width: 100%;
   max-width: 100%;
   overflow: hidden;
   /* Glassy translucent background with noticeable green and orange hints */

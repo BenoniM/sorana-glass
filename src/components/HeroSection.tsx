@@ -139,6 +139,47 @@ function buildStripPairs(start: number, count = 6): PairEntry[] {
   return Array.from({ length: count }, (_, i) => ALL_PAIRS[(start + i) % ALL_PAIRS.length]);
 }
 
+/** Products that look alike in the hero wipe even when categories differ. */
+function pairSimilarityGroup(pair: PairEntry): string {
+  if (pair.name === "Frosted Glass" || pair.name === "Sandblasted Glass") {
+    return "frosted";
+  }
+  return pair.category;
+}
+
+function areSimilarPairs(a: PairEntry, b: PairEntry): boolean {
+  return pairSimilarityGroup(a) === pairSimilarityGroup(b);
+}
+
+/** Pick `count` random pairs that are not similar to each other or to `alreadySelected`. */
+function pickDissimilarPairs(
+  pool: PairEntry[],
+  count: number,
+  alreadySelected: PairEntry[],
+): PairEntry[] {
+  const shuffled = [...pool].sort(() => Math.random() - 0.5);
+  const picked: PairEntry[] = [];
+
+  for (const candidate of shuffled) {
+    if (picked.length >= count) break;
+    const group = [...alreadySelected, ...picked];
+    if (group.some((p) => areSimilarPairs(p, candidate))) continue;
+    picked.push(candidate);
+  }
+
+  // Rare edge case: not enough dissimilar products — fill without repeating names.
+  if (picked.length < count) {
+    for (const candidate of shuffled) {
+      if (picked.length >= count) break;
+      if (picked.includes(candidate)) continue;
+      if ([...alreadySelected, ...picked].some((p) => p.name === candidate.name)) continue;
+      picked.push(candidate);
+    }
+  }
+
+  return picked;
+}
+
 // Number of additional product showcases after the initial reveal
 const EXTRA_STEPS = 2;
 
@@ -281,12 +322,14 @@ export function HeroSection() {
               activePairRef.current = targetPairEl;
               targetPairEl.classList.add("is-active");
 
-              initialPairIdxRef.current = bestIdx % middlePairs.length;
+              const middleIdx = bestIdx % middlePairs.length;
+              const entry = middlePairs[middleIdx];
+              const initialAllPairsIdx = ALL_PAIRS.indexOf(entry);
+              initialPairIdxRef.current = initialAllPairsIdx;
 
-              // Pick random extras — different from initial
-              const available = ALL_PAIRS.filter((_, i) => i !== initialPairIdxRef.current);
-              const shuffled = [...available].sort(() => Math.random() - 0.5);
-              extraPairsRef.current = shuffled.slice(0, EXTRA_STEPS);
+              // Pick random extras — different from initial and not visually similar
+              const available = ALL_PAIRS.filter((_, i) => i !== initialAllPairsIdx);
+              extraPairsRef.current = pickDissimilarPairs(available, EXTRA_STEPS, [entry]);
 
               // Calculate translation needed to center this exact pair
               const r = targetPairEl.getBoundingClientRect();
@@ -304,7 +347,6 @@ export function HeroSection() {
               }
 
               // Populate Card Text and Wipe Images
-              const entry = middlePairs[bestIdx % middlePairs.length];
               const textGroups = document.querySelectorAll<HTMLElement>(".hero-card-text-group");
               
               if (textGroups[0]) {
