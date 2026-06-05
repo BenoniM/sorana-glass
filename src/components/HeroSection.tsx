@@ -142,9 +142,9 @@ function buildStripPairs(start: number, count = 6): PairEntry[] {
 // Number of additional product showcases after the initial reveal
 const EXTRA_STEPS = 2;
 
-// Products end at 500vh (2 + 2*1.5). About panel runs 500–700vh. Buffer 80vh → 780vh total.
-// Increased to 880 to allow the about panel to breathe before the services section slides up.
-const TOTAL_VH = 850;
+// Products end at 5.2vh. About panel runs 5.2vh - 7.2vh. 
+// Increased to 1050 to allow the about panel to breathe and finish its animation completely before the services section slides up.
+const TOTAL_VH = 920;
 
 export function HeroSection() {
   // ── DOM refs ──────────────────────────────────────────────────────────────
@@ -202,9 +202,18 @@ export function HeroSection() {
       const els = contentRef.current?.querySelectorAll<HTMLElement>(".hero-animate");
       if (els?.length) {
         gsap.set(els, { opacity: 0, y: 36 });
-        timerRef.current = setTimeout(() => {
-          gsap.to(els, { opacity: 1, y: 0, stagger: 0.14, duration: 1, ease: "power3.out" });
-        }, LOADING_DURATION + 100);
+        
+        const hasLoaded = sessionStorage.getItem('loadingScreenDone');
+        if (hasLoaded) {
+          // If loading screen is already done, just animate in after a tiny delay
+          gsap.to(els, { opacity: 1, y: 0, stagger: 0.14, duration: 1, ease: "power3.out", delay: 0.1 });
+        } else {
+          // Otherwise, wait for the global event from LoadingScreen
+          const startHeroAnimation = () => {
+            gsap.to(els, { opacity: 1, y: 0, stagger: 0.14, duration: 1, ease: "power3.out" });
+          };
+          window.addEventListener('loadingScreenExiting', startHeroAnimation, { once: true });
+        }
       }
 
       // Set initial state for the info card
@@ -338,9 +347,10 @@ export function HeroSection() {
           }
 
           // Apply Phase 1 transforms — runs every frame unconditionally ─────
+          const p1Eased = gsap.parseEase("power2.inOut")(p1);
           gsap.set(stripsWrapperRef.current, {
-            rotate: gsap.utils.interpolate(-25, 0, p1),
-            scale:  gsap.utils.interpolate(1.8, 1, p1),
+            rotate: gsap.utils.interpolate(-25, 0, p1Eased),
+            scale:  gsap.utils.interpolate(1.8, 1, p1Eased),
           });
 
           // ─ Phase 2 (p: 0.45 → 1.0): expand clone pair + reveal card ──────
@@ -392,15 +402,17 @@ export function HeroSection() {
             }
 
             // Smoothly interpolate center coordinates and dimensions
-            const img1W  = gsap.utils.interpolate(startW, img1TargetW, p2);
-            const img1H  = gsap.utils.interpolate(startH, img1TargetH, p2);
-            const img1Cx = gsap.utils.interpolate(img1StartCx, img1TargetCx, p2);
-            const img1Cy = gsap.utils.interpolate(img1StartCy, img1TargetCy, p2);
+            const p2Eased = gsap.parseEase("power2.inOut")(p2);
+            
+            const img1W  = gsap.utils.interpolate(startW, img1TargetW, p2Eased);
+            const img1H  = gsap.utils.interpolate(startH, img1TargetH, p2Eased);
+            const img1Cx = gsap.utils.interpolate(img1StartCx, img1TargetCx, p2Eased);
+            const img1Cy = gsap.utils.interpolate(img1StartCy, img1TargetCy, p2Eased);
 
-            const img2W  = gsap.utils.interpolate(startW, img2TargetW, p2);
-            const img2H  = gsap.utils.interpolate(startH, img2TargetH, p2);
-            const img2Cx = gsap.utils.interpolate(img2StartCx, img2TargetCx, p2);
-            const img2Cy = gsap.utils.interpolate(img2StartCy, img2TargetCy, p2);
+            const img2W  = gsap.utils.interpolate(startW, img2TargetW, p2Eased);
+            const img2H  = gsap.utils.interpolate(startH, img2TargetH, p2Eased);
+            const img2Cx = gsap.utils.interpolate(img2StartCx, img2TargetCx, p2Eased);
+            const img2Cy = gsap.utils.interpolate(img2StartCy, img2TargetCy, p2Eased);
 
             const imgs = clonePairRef.current.querySelectorAll("img");
             if (imgs.length === 2) {
@@ -444,12 +456,14 @@ export function HeroSection() {
             ? Math.min(1, Math.max(0, p2 / 0.75))
             : p2card;
 
+          const p2cardEased = gsap.parseEase("power2.inOut")(p2cardFinal);
+
           gsap.set(infoCardRef.current, {
-            height:    `${Math.max(1, p2cardFinal * 140)}px`,
-            autoAlpha: Math.min(p2cardFinal * 2, 1),
+            height:    `${Math.max(1, p2cardEased * 140)}px`,
+            autoAlpha: Math.min(p2cardEased * 2, 1),
           });
           gsap.set(infoCardInnerRef.current, {
-            autoAlpha: Math.max(0, (p2cardFinal - 0.45) / 0.55),
+            autoAlpha: Math.max(0, (p2cardEased - 0.45) / 0.55),
           });
         },
       });
@@ -457,7 +471,7 @@ export function HeroSection() {
       ScrollTrigger.create({
         trigger: scrollContainerRef.current,
         start:   "top top",
-        end:     `+=${window.innerHeight * 2}`,  // first 200vh
+        end:     `+=${window.innerHeight * 1.5}`,  // Finish expanding earlier (1.5vh instead of 2vh)
         scrub:   1.5,
         animation: proxyTween,
       });
@@ -468,8 +482,8 @@ export function HeroSection() {
       
       ScrollTrigger.create({
         trigger: scrollContainerRef.current,
-        start:   `top+=${window.innerHeight * 2} top`,
-        end:     `top+=${window.innerHeight * (2 + EXTRA_STEPS * 1.5)} top`, // extended end duration
+        start:   `top+=${window.innerHeight * 2.2} top`, // Start later to hold the product fullscreen
+        end:     `top+=${window.innerHeight * (2.2 + EXTRA_STEPS * 1.5)} top`, // extended end duration
         scrub:   1.2,
         snap: {
           snapTo: (value) => {
@@ -549,8 +563,8 @@ export function HeroSection() {
       });
 
       // ── About Panel Reveal (Step 4) ──────────────────────────────────────
-      // Products ST ends at (2 + EXTRA_STEPS * 1.5) = 5 viewport heights
-      const ABOUT_START_VH = 2 + EXTRA_STEPS * 1.25;
+      // Products ST ends at (2.2 + EXTRA_STEPS * 1.5) viewport heights
+      const ABOUT_START_VH = 2.2 + EXTRA_STEPS * 1.5;
       ScrollTrigger.create({
         trigger: scrollContainerRef.current,
         start:   `top+=${window.innerHeight * ABOUT_START_VH} top`,
