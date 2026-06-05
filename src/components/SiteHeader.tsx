@@ -82,7 +82,7 @@ export function SiteHeader() {
     gsap.set(menuRef.current, { 
       height: 0,
       overflow: "hidden",
-      y: activeMode === 'bottom' ? 20 : -20,
+      y: -20,
       display: "none"
     });
 
@@ -148,7 +148,7 @@ export function SiteHeader() {
       {/* DROPDOWN MENU (Behind capsule) */}
       <div 
         ref={menuRef}
-        className={`absolute left-0 w-full -z-10 ${activeMode === 'bottom' ? 'bottom-0 pb-[64px]' : 'top-0 pt-[64px]'}`}
+        className={`absolute left-0 w-full -z-10 ${activeMode === 'bottom' ? 'bottom-full mb-4' : 'top-0 pt-[64px]'}`}
       >
         <div 
           className="w-full rounded-none relative"
