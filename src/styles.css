@@ -694,20 +694,15 @@
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
-   Services Section  (McAlpine-style overlay + split header)
+   Services Section  (split header + carousel)
 ══════════════════════════════════════════════════════════════════════════ */
 .svc-section {
   position: relative;
-  /* Add negative margin to overlap the pinned hero early */
-  margin-top: -100vh;
   z-index: 20;
   padding: 0;
   overflow: visible;
-  /* Transparent so the box looks like it's floating up */
-  background: transparent;
 }
 
-/* The box that slides up over the about section */
 .svc-box {
   position: relative;
   margin: 0 auto;
@@ -725,10 +720,7 @@
   -webkit-backdrop-filter: blur(32px);
   backdrop-filter: blur(32px);
   border-top: 1px solid rgba(255, 255, 255, 0.5);
-  box-shadow: 0 -20px 60px rgba(0,0,0,0.10);
-  padding-bottom: 8rem;
-  /* Ensure a minimum height so it fully covers the viewport */
-  min-height: 100vh;
+  padding-bottom: 3rem;
 }
 
 /* ── Split Section Header ──────────────────────────────────────────────── */
@@ -763,6 +755,30 @@
   height: 100%;
   object-fit: cover;
   /* filter: grayscale(100%) contrast(1.1); */
+}
+
+.svc-carousel-block {
+  padding-top: 3rem;
+}
+
+.svc-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 3rem 1.5rem;
+  max-width: 1800px;
+  margin: 0 auto;
+}
+
+.svc-embla {
+  padding-left: 3rem;
+  padding-right: 3rem;
+}
+
+.svc-progress {
+  padding: 16px 3rem 0;
+  max-width: 1800px;
+  margin: 0 auto;
 }
 
 /* ── Vertical centered service list ────────────────────────────────────── */
@@ -991,6 +1007,10 @@
   }
 
   /* ── Services Section Mobile Overrides ── */
+  .svc-carousel-block {
+    padding-top: 2rem;
+  }
+
   .svc-header-mcalpine {
     padding: 3rem 1.5rem !important;
     flex-direction: column !important;

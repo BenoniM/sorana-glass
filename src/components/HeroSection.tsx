@@ -183,9 +183,10 @@ function pickDissimilarPairs(
 // Number of additional product showcases after the initial reveal
 const EXTRA_STEPS = 2;
 
-// Products end at 5.2vh. About panel runs 5.2vh - 7.2vh. 
-// Increased to 1050 to allow the about panel to breathe and finish its animation completely before the services section slides up.
-const TOTAL_VH = 920;
+// About panel runs from ABOUT_START_VH → ABOUT_START_VH + 2 viewports.
+// Keep only a short buffer after it so services follows without extra dead scroll.
+const ABOUT_START_VH = 2.2 + EXTRA_STEPS * 1.5;
+const TOTAL_VH = (ABOUT_START_VH + 2) * 100 + 120;
 
 export function HeroSection() {
   // ── DOM refs ──────────────────────────────────────────────────────────────
@@ -605,8 +606,6 @@ export function HeroSection() {
       });
 
       // ── About Panel Reveal (Step 4) ──────────────────────────────────────
-      // Products ST ends at (2.2 + EXTRA_STEPS * 1.5) viewport heights
-      const ABOUT_START_VH = 2.2 + EXTRA_STEPS * 1.5;
       ScrollTrigger.create({
         trigger: scrollContainerRef.current,
         start:   `top+=${window.innerHeight * ABOUT_START_VH} top`,

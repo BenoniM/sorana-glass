@@ -37,8 +37,7 @@ const FALLBACK =
   "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=900&q=80&fit=crop";
 
 export function ServicesSection() {
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const boxRef = useRef<HTMLDivElement>(null);
+  const sectionRef = useRef<HTMLElement>(null);
   const cursorRef = useRef<HTMLDivElement>(null);
 
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -102,24 +101,9 @@ export function ServicesSection() {
     }
   }, []);
 
-  /* ── GSAP scroll-pin + expand animation ──────────────────────────── */
+  /* ── Pin while industries section scrolls over ─────────────────── */
   useEffect(() => {
     const ctx = gsap.context(() => {
-      gsap.fromTo(
-        boxRef.current,
-        { y: 200 },
-        {
-          y: 0,
-          ease: "none",
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: "top 90%",
-            end: "top 20%",
-            scrub: 1.2,
-          },
-        },
-      );
-
       ScrollTrigger.create({
         trigger: sectionRef.current,
         start: "bottom bottom",
@@ -215,7 +199,7 @@ export function ServicesSection() {
     : null;
 
   return (
-    <div className="svc-pin-wrapper">
+    <>
       {dragCursor}
 
       <section
@@ -223,7 +207,7 @@ export function ServicesSection() {
         className="svc-section"
         aria-labelledby="svc-heading"
       >
-        <div ref={boxRef} className="svc-box">
+        <div className="svc-box">
 
           {/* ── Split header ──────────────────────────────────────── */}
           <div className="svc-header-mcalpine">
@@ -240,17 +224,9 @@ export function ServicesSection() {
             <h2 className="svc-title-right text-white">Catalogue</h2>
           </div>
 
+          <div className="svc-carousel-block">
           {/* ── Controls row ─────────────────────────────────────── */}
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              padding: "0 3rem 1.5rem",
-              maxWidth: "1800px",
-              margin: "0 auto",
-            }}
-          >
+          <div className="svc-controls">
             {/* Counter */}
             <span
               style={{
@@ -331,10 +307,9 @@ export function ServicesSection() {
           {/* ── Embla viewport ───────────────────────────────────── */}
           <div
             ref={emblaRef}
+            className="svc-embla"
             style={{
               overflow: "hidden",
-              paddingLeft: "3rem",
-              paddingRight: "3rem",
             }}
             onMouseMove={handleMouseMove}
             onMouseEnter={(e) => {
@@ -459,13 +434,7 @@ export function ServicesSection() {
           </div>
 
           {/* ── Progress bar ─────────────────────────────────────── */}
-          <div
-            style={{
-              padding: "20px 3rem 0",
-              maxWidth: "1800px",
-              margin: "0 auto",
-            }}
-          >
+          <div className="svc-progress">
             <div
               style={{
                 height: "1px",
@@ -483,9 +452,10 @@ export function ServicesSection() {
               />
             </div>
           </div>
+          </div>
 
         </div>
       </section>
-    </div>
+    </>
   );
 }
