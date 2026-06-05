@@ -114,18 +114,54 @@ function Projects() {
     if (!wrapperRef.current || !contentRef.current) return;
     const ctx = gsap.context(() => {
       ScrollTrigger.create({
+        id: "projects-pin",
         trigger: wrapperRef.current,
         start: "bottom bottom",
         end: () => "+=" + window.innerHeight,
         pin: contentRef.current,
         pinSpacing: true,
+        onUpdate: (self) => {
+          window.dispatchEvent(
+            new CustomEvent("pinned-footer-progress", { detail: { progress: self.progress } }),
+          );
+        },
+        onEnter: () => {
+          window.dispatchEvent(
+            new CustomEvent("pinned-footer-progress", { detail: { progress: 0, visible: true } }),
+          );
+        },
+        onEnterBack: () => {
+          window.dispatchEvent(
+            new CustomEvent("pinned-footer-progress", { detail: { progress: 0, visible: true, enterBack: true } }),
+          );
+        },
+        onLeaveBack: () => {
+          window.dispatchEvent(
+            new CustomEvent("pinned-footer-progress", { detail: { progress: 0, visible: false } }),
+          );
+        },
+        onLeave: () => {
+          window.dispatchEvent(
+            new CustomEvent("pinned-footer-progress", { detail: { progress: 1, visible: true, leave: true } }),
+          );
+        },
       });
+      ScrollTrigger.refresh();
     }, wrapperRef);
-    return () => ctx.revert();
+
+    const refresh = () => ScrollTrigger.refresh();
+    window.addEventListener("load", refresh);
+    window.addEventListener("resize", refresh);
+
+    return () => {
+      ctx.revert();
+      window.removeEventListener("load", refresh);
+      window.removeEventListener("resize", refresh);
+    };
   }, []);
 
   return (
-    <div ref={wrapperRef} className="relative">
+    <div ref={wrapperRef} id="projects-footer-trigger" className="relative">
       <div ref={contentRef} className="relative bg-background">
         <section className="relative overflow-hidden py-16 flex flex-col items-center justify-center text-center">
           {/* Greenish/orangeish glassy background */}

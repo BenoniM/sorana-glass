@@ -34,12 +34,39 @@ function About() {
     
     const ctx = gsap.context(() => {
       ScrollTrigger.create({
+        id: "about-pin",
         trigger: wrapperRef.current,
-        start: "bottom bottom", // When the bottom of the wrapper hits the bottom of the viewport
-        end: () => "+=" + window.innerHeight, // Pin it for the duration of 1 viewport height (for the footer reveal)
+        start: "bottom bottom",
+        end: () => "+=" + window.innerHeight,
         pin: contentRef.current,
-        pinSpacing: true, // Automatically adds the exact padding needed
+        pinSpacing: true,
+        onUpdate: (self) => {
+          window.dispatchEvent(
+            new CustomEvent("pinned-footer-progress", { detail: { progress: self.progress } }),
+          );
+        },
+        onEnter: () => {
+          window.dispatchEvent(
+            new CustomEvent("pinned-footer-progress", { detail: { progress: 0, visible: true } }),
+          );
+        },
+        onEnterBack: () => {
+          window.dispatchEvent(
+            new CustomEvent("pinned-footer-progress", { detail: { progress: 0, visible: true, enterBack: true } }),
+          );
+        },
+        onLeaveBack: () => {
+          window.dispatchEvent(
+            new CustomEvent("pinned-footer-progress", { detail: { progress: 0, visible: false } }),
+          );
+        },
+        onLeave: () => {
+          window.dispatchEvent(
+            new CustomEvent("pinned-footer-progress", { detail: { progress: 1, visible: true, leave: true } }),
+          );
+        },
       });
+      ScrollTrigger.refresh();
     }, wrapperRef);
 
     return () => ctx.revert();
@@ -78,7 +105,7 @@ function About() {
 
       <StorySection />
 
-      <div ref={wrapperRef} className="relative">
+      <div ref={wrapperRef} id="about-footer-trigger" className="relative">
         <div ref={contentRef} className="relative overflow-hidden bg-surface min-h-screen">
           {/* Background Layer: Frosted Glass + Leafy SVGs */}
           <div className="absolute inset-0 z-0 bg-[#EFEFEA]">
