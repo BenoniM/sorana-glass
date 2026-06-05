@@ -105,15 +105,23 @@ type PairEntry = { imgs: [string, string]; name: string; category: string };
 
 /** Each pair = two images from the same folder + metadata */
 const ALL_PAIRS: PairEntry[] = [
-  { imgs: [tempered1,    tempered2],    name: "Tempered Glass",      category: "Architectural" },
-  { imgs: [frosted1,     frosted2],     name: "Frosted Glass",        category: "Decorative"    },
-  { imgs: [frameless1,   frameless2],   name: "Frameless Partitions", category: "Interior"      },
-  { imgs: [shower1,      shower2],      name: "Shower Enclosures",    category: "Bathroom"      },
-  { imgs: [laminated1,   laminated2],   name: "Laminated Glass",      category: "Security"      },
-  { imgs: [autoglass1,   autoglass2],   name: "Auto Glass",           category: "Automotive"    },
-  { imgs: [bulletproof1, bulletproof2], name: "Bulletproof Glass",    category: "Security"      },
-  { imgs: [printed1,     printed2],     name: "Printed Glass",        category: "Decorative"    },
-  { imgs: [sandblasted1, sandblasted2], name: "Sandblasted Glass",    category: "Frosted"       },
+  { imgs: ["https://images.pexels.com/photos/20677918/pexels-photo-20677918.jpeg",    "https://images.pexels.com/photos/68724/pexels-photo-68724.jpeg"],    name: "Tempered Glass",      category: "Architectural" },
+
+  { imgs: ["https://images.unsplash.com/photo-1737316992965-c9f22680c40f?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",     "https://images.unsplash.com/photo-1764670587705-0508e724b929?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"],     name: "Frosted Glass",        category: "Decorative"    },
+
+  { imgs: ["https://images.unsplash.com/photo-1765766600513-5a9ae1440de9?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",   "https://images.pexels.com/photos/6436749/pexels-photo-6436749.jpeg"],   name: "Frameless Partitions", category: "Interior"      },
+
+  { imgs: ["https://images.pexels.com/photos/7546284/pexels-photo-7546284.jpeg",      "https://images.pexels.com/photos/8082556/pexels-photo-8082556.jpeg"],      name: "Shower Enclosures",    category: "Bathroom"      },
+
+  { imgs: ["https://plus.unsplash.com/premium_photo-1673711761323-b97492ac57bf?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",   "https://images.unsplash.com/photo-1540981992196-5827f2f4566e?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"],   name: "Laminated Glass",      category: "Security"      },
+
+  { imgs: ["https://images.pexels.com/photos/4839258/pexels-photo-4839258.jpeg",   "https://images.pexels.com/photos/11950154/pexels-photo-11950154.jpeg"],   name: "Auto Glass",           category: "Automotive"    },
+
+  { imgs: ["https://images.pexels.com/photos/33530412/pexels-photo-33530412.jpeg", "https://images.pexels.com/photos/33530415/pexels-photo-33530415.jpeg"], name: "Bulletproof Glass",    category: "Security"      },
+
+  { imgs: ["https://images.unsplash.com/photo-1614959541579-c01f9b605f79?q=80&w=736&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",     "https://images.pexels.com/photos/18836811/pexels-photo-18836811.jpeg"],     name: "Printed Glass",        category: "Decorative"    },
+
+  { imgs: ["https://images.unsplash.com/photo-1570347809976-0a4abd0aa811?q=80&w=735&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", "https://images.pexels.com/photos/14303756/pexels-photo-14303756.jpeg"], name: "Sandblasted Glass",    category: "Frosted"       },
 ];
 
 // Strip layout: three rows. Middle strip (index 1) is the one that un-rotates on scroll.
