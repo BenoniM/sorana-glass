@@ -40,6 +40,19 @@ export function SiteHeader() {
   }, [isOpen]);
 
   useEffect(() => {
+    if (!isOpen || activeMode !== "top") return;
+
+    const handleOutside = (e: PointerEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener("pointerdown", handleOutside);
+    return () => document.removeEventListener("pointerdown", handleOutside);
+  }, [isOpen, activeMode]);
+
+  useEffect(() => {
     const handleBottomEnter = () => {
       isBottomRef.current = true;
       setActiveMode('bottom');

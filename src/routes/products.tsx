@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { PageHeroSection } from "@/components/PageHeroSection";
 import { WebGLGallery } from "../components/WebGLGallery";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 
@@ -214,35 +215,15 @@ function Products() {
         />
       </ErrorBoundary>
 
-      {/* ── Hero ──────────────────────────────────────────────────────── */}
-      <section
-        className="relative overflow-hidden py-16 flex flex-col items-center justify-center text-center"
-        style={{ position: "relative", zIndex: 10 }}
-      >
-        <div className="absolute inset-0 z-0">
-          <div className="absolute top-0 left-1/4 w-[50vw] h-[50vw] max-w-[800px] max-h-[800px] bg-[#E87732]/50 rounded-full blur-[80px] -translate-y-1/3 -translate-x-2/3" />
-          <div className="absolute bottom-0 right-1/4 w-[50vw] h-[50vw] max-w-[800px] max-h-[800px] bg-[#0A7C3F]/40 rounded-full blur-[80px] translate-y-1/3 translate-x-2/3" />
-          <div className="absolute inset-0 bg-background/30 backdrop-blur-[30px]" />
-        </div>
-        <div className="relative z-10 h-full w-full max-w-6xl px-6 flex flex-col items-center">
-          <h1 className="mb-8 mt-10 max-w-3xl capitalize font-display text-3xl font-semibold leading-tight">
-            A complete range of processed glass.
-          </h1>
-          <div className="relative p-2 md:p-3 bg-[#E87732]/30 backdrop-blur-md border border-white/20 shadow-2xl mb-10 w-64 max-w-4xl mx-auto">
-            <div className="p-1 rounded-sm">
-              <img
-                src="https://images.pexels.com/photos/30196145/pexels-photo-30196145.jpeg"
-                alt="Glass Products"
-                className="w-full h-[180px] sm:h-[220px] md:h-[300px] object-cover opacity-95"
-              />
-            </div>
-          </div>
-          <p className="mt-3 max-w-5xl capitalize font-display text-lg font-light text-balance">
-            From structural facades to delicate decorative panels — all
-            manufactured in Addis Ababa from Grade One float glass.
-          </p>
-        </div>
-      </section>
+      <PageHeroSection
+        imageSrc="https://images.pexels.com/photos/17680665/pexels-photo-17680665.jpeg"
+        imageAlt="Glass Products"
+        title="A complete range of processed glass."
+        description="From structural facades to delicate decorative panels — all manufactured in Addis Ababa from Grade One float glass."
+        imageClassName="w-full h-[180px] sm:h-[220px] md:h-[300px] object-cover"
+        imageWrapperClassName="w-64 max-w-4xl mx-auto"
+        className="z-10"
+      />
 
       {/* ── Gallery Section ──────────────────────────────────────────── */}
       <section id="products-gallery" className="bg-background pb-[600px] md:pb-[800px]">
