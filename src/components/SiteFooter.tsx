@@ -46,7 +46,10 @@ export function SiteFooter() {
       // If we're not on the home page, industries-section might not exist, but let's look for a generic footer trigger if needed.
       // For now, the original code looked for industries-section. 
       // To avoid infinite loops on other pages, we should only wait if we are on the home page, or look for the last section.
-      const triggerElement = document.getElementById("industries-section") || document.querySelector("main")?.lastElementChild;
+      const triggerElement =
+        document.getElementById("industries-section") ||
+        document.getElementById("products-gallery") ||
+        document.querySelector("main section:last-of-type");
       
       if (!triggerElement) { 
         rafId = requestAnimationFrame(init); 
