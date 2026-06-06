@@ -895,7 +895,7 @@ export function HeroSection() {
         {/* ── Additional Slideshow Wipes (Mersi-Style) ──────────────────────── */}
         <div className="hero-slides-wrapper" style={{ position: 'absolute', inset: 0, zIndex: 2, pointerEvents: 'none' }}>
           {[...Array(EXTRA_STEPS)].map((_, i) => (
-             <div key={i} className="hero-slide-layer" style={{ position: 'absolute', inset: 0 }}>
+             <div key={i} className="hero-slide-layer" style={{ position: 'absolute', inset: 0, border: '25px solid black' }}>
                {/* Left panel wipes UP from BOTTOM */}
                <div className="hero-slide-wipe-left" style={{ position: 'absolute', left: 0, bottom: 0, width: '50%', height: 0, overflow: 'hidden', willChange: 'height' }}>
                  <img className="hero-slide-img-left" alt="" style={{ position: 'absolute', bottom: 0, left: 0, width: '100%', height: '100vh', objectFit: 'cover' }} />
@@ -1049,15 +1049,15 @@ export function HeroSection() {
           <div className="hero-animate mt-10 flex flex-wrap items-center justify-center gap-4">
             <Link
               to="/contact"
-              className="inline-flex items-center gap-2 rounded-md bg-[#0A7C3F] px-7 py-3.5 text-sm font-semibold text-white shadow-lg transition-all hover:bg-[#0b9048] hover:scale-[1.03] active:scale-[0.98]"
+              className="inline-flex items-center gap-2 bg-[#0A7C3F] px-7 py-3.5 text-sm font-semibold text-white shadow-lg transition-all hover:bg-[#0b9048] hover:scale-[1.03] active:scale-[0.98]"
             >
-              Request a quote <ArrowRight className="h-4 w-4" />
+              Contact Us <ArrowRight className="h-4 w-4" />
             </Link>
             <Link
               to="/products"
-              className="inline-flex items-center gap-2 rounded-md border border-white/30 bg-white/10 px-7 py-3.5 text-sm font-semibold text-white backdrop-blur-sm transition-all hover:bg-white/20 hover:scale-[1.03] active:scale-[0.98]"
+              className="inline-flex items-center gap-2 border border-white/30 bg-white/10 px-7 py-3.5 text-sm font-semibold text-white backdrop-blur-sm transition-all hover:bg-white/20 hover:scale-[1.03] active:scale-[0.98]"
             >
-              Explore products
+              Explore Products
             </Link>
           </div>
         </div>
