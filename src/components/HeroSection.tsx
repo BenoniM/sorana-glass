@@ -433,7 +433,7 @@ export function HeroSection() {
               img2TargetCy = windowH * 3 / 4;
             } else {
               // Desktop: animate to side-by-side
-              const BORDER = 11;
+              const BORDER = 10.5;
               img1TargetW = bodyW / 2 - BORDER;
               img1TargetH = windowH - BORDER * 2;
               img1TargetCx = bodyW / 4 - BORDER / 2;
@@ -857,7 +857,7 @@ export function HeroSection() {
       <section
         ref={heroRef}
         id="hero"
-        className="relative h-screen overflow-hidden bg-foreground"
+        className="relative h-screen overflow-hidden bg-[#032111]"
         style={{ position: "sticky", top: 0 }}
       >
         {/* ── Diagonal image strips ──────────────────────────────────────────── */}
@@ -896,7 +896,7 @@ export function HeroSection() {
         {/* ── Additional Slideshow Wipes (Mersi-Style) ──────────────────────── */}
         <div className="hero-slides-wrapper" style={{ position: 'absolute', inset: 0, zIndex: 2, pointerEvents: 'none' }}>
           {[...Array(EXTRA_STEPS)].map((_, i) => (
-             <div key={i} className="hero-slide-layer" style={{ position: 'absolute', inset: 0, border: '15px solid black', overflow: 'hidden' }}>
+             <div key={i} className="hero-slide-layer" style={{ position: 'absolute', inset: 0, border: '15px solid #032111', overflow: 'hidden' }}>
                {/* Left panel wipes UP from BOTTOM */}
                <div className="hero-slide-wipe-left" style={{ position: 'absolute', left: -10, bottom: 0, width: '50%', height: 0, overflow: 'hidden', willChange: 'height' }}>
                  <img className="hero-slide-img-left" alt="" style={{ position: 'absolute', bottom: 0, left: 0, width: '100%', height: '100vh', objectFit: 'cover' }} />
