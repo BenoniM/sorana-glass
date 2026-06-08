@@ -433,14 +433,15 @@ export function HeroSection() {
               img2TargetCy = windowH * 3 / 4;
             } else {
               // Desktop: animate to side-by-side
-              img1TargetW = bodyW / 2;
-              img1TargetH = windowH;
-              img1TargetCx = bodyW / 4;
+              const BORDER = 11;
+              img1TargetW = bodyW / 2 - BORDER;
+              img1TargetH = windowH - BORDER * 2;
+              img1TargetCx = bodyW / 4 - BORDER / 2;
               img1TargetCy = windowH / 2;
 
-              img2TargetW = bodyW / 2;
-              img2TargetH = windowH;
-              img2TargetCx = bodyW * 3 / 4;
+              img2TargetW = bodyW / 2 - BORDER;
+              img2TargetH = windowH - BORDER * 2;
+              img2TargetCx = bodyW * 3 / 4 + BORDER / 2;
               img2TargetCy = windowH / 2;
             }
 
@@ -895,13 +896,13 @@ export function HeroSection() {
         {/* ── Additional Slideshow Wipes (Mersi-Style) ──────────────────────── */}
         <div className="hero-slides-wrapper" style={{ position: 'absolute', inset: 0, zIndex: 2, pointerEvents: 'none' }}>
           {[...Array(EXTRA_STEPS)].map((_, i) => (
-             <div key={i} className="hero-slide-layer" style={{ position: 'absolute', inset: 0, border: '25px solid black' }}>
+             <div key={i} className="hero-slide-layer" style={{ position: 'absolute', inset: 0, border: '15px solid black', overflow: 'hidden' }}>
                {/* Left panel wipes UP from BOTTOM */}
-               <div className="hero-slide-wipe-left" style={{ position: 'absolute', left: 0, bottom: 0, width: '50%', height: 0, overflow: 'hidden', willChange: 'height' }}>
+               <div className="hero-slide-wipe-left" style={{ position: 'absolute', left: -10, bottom: 0, width: '50%', height: 0, overflow: 'hidden', willChange: 'height' }}>
                  <img className="hero-slide-img-left" alt="" style={{ position: 'absolute', bottom: 0, left: 0, width: '100%', height: '100vh', objectFit: 'cover' }} />
                </div>
                {/* Right panel wipes DOWN from TOP */}
-               <div className="hero-slide-wipe-right" style={{ position: 'absolute', right: 0, top: 0, width: '50%', height: 0, overflow: 'hidden', willChange: 'height' }}>
+               <div className="hero-slide-wipe-right" style={{ position: 'absolute', right: -10, top: 0, width: '50%', height: 0, overflow: 'hidden', willChange: 'height' }}>
                  <img className="hero-slide-img-right" alt="" style={{ position: 'absolute', top: 0, right: 0, width: '100%', height: '100vh', objectFit: 'cover' }} />
                </div>
              </div>
