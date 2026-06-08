@@ -186,7 +186,6 @@ function seededShuffle<T>(arr: T[], seed: number): T[] {
 function Products() {
   const [filter, setFilter] = useState<string>("All");
 
-  // Stable shuffle — same order every page load, randomised across category groups
   const shuffledCards = useMemo(() => seededShuffle(CARDS, 42), []);
 
   const filteredCards =
@@ -197,7 +196,6 @@ function Products() {
           7,
         );
 
-  // After filter changes the page height changes — tell ScrollTrigger to recalculate
   useEffect(() => {
     const id = setTimeout(() => {
       ScrollTrigger.refresh();
@@ -207,6 +205,104 @@ function Products() {
 
   return (
     <div className="relative bg-background">
+      <style>{`
+        /* ── Mobile styles (≤768px) ── */
+        @media (max-width: 768px) {
+          .mobile-filter-block {
+            display: block !important;
+          }
+          .desktop-filter-aside {
+            display: none !important;
+          }
+          .product-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 12px !important;
+          }
+          .product-article img.gallery-img {
+            width: 100% !important;
+          }
+          .products-body {
+            padding: 0 10px !important;
+            gap: 0 !important;
+          }
+        }
+
+        /* ── Desktop styles (>768px) ── */
+        @media (min-width: 769px) {
+          .mobile-filter-block {
+            display: none !important;
+          }
+          .product-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 32px;
+            width: 100%;
+          }
+        }
+
+        .product-grid {
+          display: grid;
+          width: 100%;
+        }
+
+        /* ── Mobile filter: normal in-flow, scrolls away with the page ── */
+        .mobile-filter-block {
+          display: none;
+          padding: 12px 16px 14px;
+          text-align: center;
+          border-top: 1px solid rgba(255,255,255,0.08);
+          border-bottom: 1px solid rgba(255,255,255,0.08);
+          background: var(--color-background);
+        }
+
+        .mobile-filter-label {
+          font-family: var(--font-display);
+          font-size: 12px;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.26em;
+          color: #0A7C3F;
+          margin: 0 0 10px 0;
+        }
+
+        .mobile-filter-pills {
+          display: flex;
+          flex-direction: row;
+          flex-wrap: wrap;
+          gap: 6px;
+          justify-content: center;
+        }
+
+        .mobile-filter-pill {
+          all: unset;
+          cursor: pointer;
+          flex-shrink: 0;
+          padding: 5px 12px;
+          border-radius: 2px;
+          font-family: var(--font-display);
+          font-size: 10px;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.16em;
+          white-space: nowrap;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          background: transparent;
+          color: var(--color-muted-foreground);
+          transition: background 0.2s, color 0.2s, border-color 0.2s;
+        }
+        .mobile-filter-pill--active {
+          background: rgba(10, 124, 63, 0.12);
+          color: #0A7C3F;
+          border-color: #0A7C3F;
+        }
+
+        @media (max-width: 900px) and (min-width: 769px) {
+          .product-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+          }
+        }
+      `}</style>
+
       <ErrorBoundary>
         <WebGLGallery
           key={filter}
@@ -225,10 +321,8 @@ function Products() {
         className="z-10"
       />
 
-      {/* ── Gallery Section ──────────────────────────────────────────── */}
       <section id="products-gallery" className="bg-background pb-[600px] md:pb-[800px]">
-        {/* Section header */}
-        <div className="text-center pt-24 pb-16 px-6">
+        <div className="text-center pt-24 pb-6 px-6">
           <span className="block text-[10px] font-bold uppercase tracking-[0.22em] text-[#0A7C3F] mb-4">
             Our Products
           </span>
@@ -244,8 +338,27 @@ function Products() {
           </p>
         </div>
 
+        {/* ── MOBILE ONLY: inline filter bar, scrolls with the page ── */}
+        <div className="mobile-filter-block mb-6">
+          <p className="mobile-filter-label">
+            Filter · {filteredCards.length} item{filteredCards.length !== 1 ? "s" : ""}
+          </p>
+          <div className="mobile-filter-pills">
+            {CATEGORIES.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setFilter(cat)}
+                className={`mobile-filter-pill${filter === cat ? " mobile-filter-pill--active" : ""}`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+        </div>
+
         {/* ── Body: grid left, filter right ───────────────────────── */}
         <div
+          className="products-body"
           style={{
             maxWidth: "1400px",
             margin: "0 auto",
@@ -257,8 +370,9 @@ function Products() {
             zIndex: 10,
           }}
         >
-          {/* ── Right sticky filter ─────────────────────────────────── */}
+          {/* ── Right sticky filter (desktop only) ──────────────────── */}
           <aside
+            className="desktop-filter-aside"
             style={{
               position: "sticky",
               top: "7rem",
@@ -271,7 +385,6 @@ function Products() {
               overflow: "hidden",
             }}
           >
-            {/* Header */}
             <div
               style={{
                 padding: "16px 20px",
@@ -294,7 +407,6 @@ function Products() {
               </p>
             </div>
 
-            {/* Category list */}
             <ul style={{ listStyle: "none", padding: "8px 0", margin: 0 }}>
               {CATEGORIES.map((cat) => {
                 const active = filter === cat;
@@ -362,7 +474,6 @@ function Products() {
               })}
             </ul>
 
-            {/* Count footer */}
             <div
               style={{
                 padding: "12px 20px",
@@ -386,28 +497,9 @@ function Products() {
 
           {/* ── Image grid ─────────────────────────────────────────── */}
           <div style={{ flex: 1, minWidth: 0 }}>
-            <style>{`
-              .product-grid {
-                display: grid;
-                grid-template-columns: repeat(3, 1fr);
-                gap: 32px;
-                width: 100%;
-              }
-              @media (max-width: 900px) {
-                .product-grid {
-                  grid-template-columns: repeat(2, 1fr);
-                }
-              }
-              @media (max-width: 560px) {
-                .product-grid {
-                  grid-template-columns: 1fr;
-                }
-              }
-            `}</style>
             <div className="product-grid">
               {filteredCards.map((c, idx) => (
-                <article key={`${c.name}-${idx}`}>
-                  {/* Title above */}
+                <article key={`${c.name}-${idx}`} className="product-article">
                   <div className="gallery-text-wrapper" style={{ marginBottom: "8px" }}>
                     <p
                       style={{
@@ -425,7 +517,6 @@ function Products() {
                     </p>
                   </div>
 
-                  {/* Image */}
                   <div style={{ overflow: "hidden", width: "100%" }}>
                     <img
                       crossOrigin="anonymous"
@@ -438,23 +529,17 @@ function Products() {
                         aspectRatio: "3 / 4",
                         objectFit: "cover",
                         display: "block",
-                        transition:
-                          "transform 0.7s cubic-bezier(0.4,0,0.2,1)",
+                        transition: "transform 0.7s cubic-bezier(0.4,0,0.2,1)",
                       }}
                       onMouseEnter={(e) => {
-                        (
-                          e.currentTarget as HTMLImageElement
-                        ).style.transform = "scale(1.05)";
+                        (e.currentTarget as HTMLImageElement).style.transform = "scale(1.05)";
                       }}
                       onMouseLeave={(e) => {
-                        (
-                          e.currentTarget as HTMLImageElement
-                        ).style.transform = "scale(1)";
+                        (e.currentTarget as HTMLImageElement).style.transform = "scale(1)";
                       }}
                     />
                   </div>
 
-                  {/* Description below */}
                   <div
                     className="gallery-text-wrapper"
                     style={{ marginTop: "8px", marginBottom: "4px" }}
@@ -475,8 +560,6 @@ function Products() {
               ))}
             </div>
           </div>
-
-
         </div>
       </section>
     </div>
