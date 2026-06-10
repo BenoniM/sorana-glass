@@ -212,12 +212,12 @@ function setupWebGL(
 const STEPS = [
   {
     index: "01",
-    text: "Established in 2017 under its current legal structure, Sorana builds on a long operational history that began under a sister company focused on auto glass services.",
+    text: "With a rich history spanning over 25 years, Sorana builds on a long operational history that began under a sister company focused on auto glass services.",
     image: "https://images.pexels.com/photos/13203179/pexels-photo-13203179.jpeg",
   },
   {
     index: "02",
-    text: "That automotive heritage shaped a culture of precision and accountability. As demand for architectural glass grew across Ethiopia, Sorana expanded into full-scale processing — investing in 4 advanced tempering furnaces, including a recent upgrade from leading global supplier North Glass.",
+    text: "That automotive heritage shaped a culture of precision. Building on decades of tempering expertise, we expanded into full-scale architectural processing — continually upgrading our 4 advanced tempering furnaces to meet growing national demand.",
     image: "https://images.pexels.com/photos/35333877/pexels-photo-35333877.jpeg",
   },
   {
