@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { ArrowRight, ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { PageHeroSection } from "@/components/PageHeroSection";
 
 export const Route = createFileRoute("/products")({
@@ -110,25 +110,29 @@ function Products() {
 
       {/* ── Main Content Area ── */}
       <div className="max-w-7xl mx-auto px-6 py-16 flex flex-col lg:flex-row gap-12 items-start">
-        
-        {/* ── Left Sidebar Filter ── */}
+
+        {/* ── Filter Sidebar ── */}
         <aside className="w-full lg:w-64 flex-shrink-0 bg-white border border-gray-200 lg:sticky lg:top-24">
-          <div className="flex flex-col">
+          <div className="grid grid-cols-2 lg:grid-cols-1">
             {CATEGORIES.map((cat) => {
               const active = filter === cat;
               return (
                 <button
                   key={cat}
                   onClick={() => setFilter(cat)}
-                  className={`flex items-center justify-between px-5 py-4 text-sm font-sans text-left transition-all border-b border-gray-100 last:border-b-0
-                    ${active ? 'bg-[#0A7C3F]/10 text-[#0A7C3F] border-l-4 border-l-[#0A7C3F] font-semibold' : 'bg-white text-gray-600 hover:bg-gray-50 border-l-4 border-l-transparent font-medium'}
+                  className={`flex items-center justify-between px-4 py-3 lg:px-5 lg:py-4 text-sm font-sans text-left transition-all
+                    border-b border-gray-100 last:border-b-0
+                    ${active
+                      ? "bg-[#0A7C3F]/10 text-[#0A7C3F] font-semibold border-t-2 border-t-[#0A7C3F] lg:border-t-0 lg:border-l-4 lg:border-l-[#0A7C3F]"
+                      : "bg-white text-gray-600 hover:bg-gray-50 font-medium border-t-2 border-t-transparent lg:border-t-0 lg:border-l-4 lg:border-l-transparent"
+                    }
                   `}
                 >
-                  <span>{cat}</span>
+                  <span className="truncate">{cat}</span>
                   {active ? (
-                    <ArrowUpRight className="w-4 h-4 text-[#0A7C3F] opacity-70" />
+                    <ArrowUpRight className="w-4 h-4 text-[#0A7C3F] opacity-70 flex-shrink-0 ml-1" />
                   ) : (
-                    <ArrowRight className="w-4 h-4 text-gray-300" />
+                    <ArrowRight className="w-4 h-4 text-gray-300 flex-shrink-0 ml-1" />
                   )}
                 </button>
               );
@@ -136,16 +140,15 @@ function Products() {
           </div>
         </aside>
 
-        {/* ── Right Product Grid ── */}
+        {/* ── Product Grid ── */}
         <div className="flex-1 flex flex-col w-full">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 w-full">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 w-full">
             {filteredCards.map((c, idx) => (
-              <article 
-                key={`${c.name}-${idx}`} 
+              <article
+                key={`${c.name}-${idx}`}
                 className="flex flex-col bg-white border border-gray-100 hover:shadow-xl transition-all duration-300 group cursor-pointer"
               >
-                <div className="w-full aspect-[4/3] overflow-hidden relative bg-[#f4f7f9] flex items-center justify-center p-4">
-                  {/* Subtle radial gradient background effect matching the reference design */}
+                <div className="w-full aspect-[4/3] overflow-hidden relative bg-[#f4f7f9] flex items-center justify-center">
                   <div className="absolute inset-0 bg-gradient-to-tr from-transparent to-[#e8f1f5] opacity-50"></div>
                   <img
                     src={c.img}
@@ -153,13 +156,12 @@ function Products() {
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 relative z-10"
                   />
                 </div>
-                <div className="py-6 px-4 text-center bg-white flex-1 flex items-center justify-center">
-                  <h3 className="font-sans font-bold text-gray-900 tracking-wide text-[15px]">{c.name}</h3>
+                <div className="py-4 px-3 md:py-6 md:px-4 text-center bg-white flex-1 flex items-center justify-center">
+                  <h3 className="font-sans font-bold text-gray-900 tracking-wide text-[13px] md:text-[15px]">{c.name}</h3>
                 </div>
               </article>
             ))}
           </div>
-
         </div>
 
       </div>

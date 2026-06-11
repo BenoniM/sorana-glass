@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 const MILESTONES = [
   {
@@ -39,16 +39,67 @@ const MILESTONES = [
   },
 ];
 
+const DURATION = 5000;
+
 export function MilestonesSection() {
   const [active, setActive] = useState(0);
   const [animKey, setAnimKey] = useState(0);
-  const cardRef = useRef<HTMLDivElement>(null);
+  const [paused, setPaused] = useState(false);
+  const [progress, setProgress] = useState(0);
+  
+  // Stores when the CURRENT slide started playing
+  const startTimeRef = useRef<number>(Date.now());
+  // Stores how much time elapsed before we paused (so pause/resume doesn't jump)
+  const elapsedBeforePauseRef = useRef<number>(0);
+  const rafRef = useRef<number | null>(null);
 
-  const go = (i: number) => {
-    const next = Math.max(0, Math.min(MILESTONES.length - 1, i));
-    setActive(next);
+  // Manual jump — resets the timeline markers safely
+  const goTo = (index: number) => {
+    setActive(index);
     setAnimKey((k) => k + 1);
+    setProgress(0);
+    startTimeRef.current = Date.now();
+    elapsedBeforePauseRef.current = 0;
   };
+
+  useEffect(() => {
+    if (paused) {
+      // Record exactly how far along we were when the user hovered over the container
+      elapsedBeforePauseRef.current += Date.now() - startTimeRef.current;
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      return;
+    }
+
+    // Adjust start time to account for previous elapsed runtime before pause
+    startTimeRef.current = Date.now() - elapsedBeforePauseRef.current;
+
+    const tick = () => {
+      const totalElapsed = Date.now() - startTimeRef.current;
+      
+      if (totalElapsed >= DURATION) {
+        // Slide duration met: Reset clock parameters and move to the next slide safely
+        startTimeRef.current = Date.now();
+        elapsedBeforePauseRef.current = 0;
+        setProgress(0);
+        setActive((prev) => {
+          const nextIndex = (prev + 1) % MILESTONES.length;
+          setAnimKey((k) => k + 1);
+          return nextIndex;
+        });
+      } else {
+        // Keep counting up progress bar safely 
+        setProgress(totalElapsed / DURATION);
+      }
+
+      rafRef.current = requestAnimationFrame(tick);
+    };
+
+    rafRef.current = requestAnimationFrame(tick);
+    
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
+  }, [paused, active]); // Sync loop dynamically with active updates and pause states
 
   const m = MILESTONES[active];
 
@@ -56,7 +107,6 @@ export function MilestonesSection() {
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&display=swap');
-
         .ms-section {
           font-family: system-ui, -apple-system, sans-serif;
           padding: 4rem 0 5rem;
@@ -67,10 +117,9 @@ export function MilestonesSection() {
           width: 100%;
           padding: 0 clamp(1.5rem, 5vw, 4rem);
           box-sizing: border-box;
+          position: relative;
         }
-        .ms-header {
-          margin-bottom: 3.5rem;
-        }
+        .ms-header { margin-bottom: 3.5rem; }
         .ms-eyebrow {
           font-size: 10px;
           letter-spacing: 0.3em;
@@ -85,11 +134,10 @@ export function MilestonesSection() {
           letter-spacing: -0.02em;
           line-height: 1.05;
           color: #111;
+          margin: 0;
         }
-        /* Timeline track */
         .ms-track {
           display: flex;
-          gap: 0;
           position: relative;
           margin-bottom: 3rem;
         }
@@ -122,7 +170,7 @@ export function MilestonesSection() {
           display: flex;
           align-items: center;
           justify-content: center;
-          transition: all 0.3s ease;
+          transition: background 0.35s ease, border-color 0.35s ease, transform 0.35s cubic-bezier(0.34,1.56,0.64,1), color 0.35s ease;
           font-family: 'DM Serif Display', Georgia, serif;
           font-size: 0.75rem;
           color: rgba(0,0,0,0.3);
@@ -136,30 +184,40 @@ export function MilestonesSection() {
           font-size: 11px;
           letter-spacing: 0.08em;
           color: rgba(0,0,0,0.35);
-          transition: color 0.3s;
+          transition: color 0.3s, font-weight 0.3s;
         }
-        .ms-stop.active .ms-stop-year {
-          color: #111;
-          font-weight: 600;
+        .ms-stop.active .ms-stop-year { color: #111; font-weight: 600; }
+        .ms-card-wrap {
+          position: relative;
+          min-height: 260px;
+          overflow: hidden;
         }
-        /* Card */
         .ms-card {
           display: grid;
           grid-template-columns: 1fr 1px 1fr;
           gap: 0 clamp(2rem, 5vw, 4rem);
           align-items: center;
           min-height: 260px;
-          animation: ms-fade-in 0.4s ease;
+          width: 100%;
         }
-        @keyframes ms-fade-in {
-          from { opacity: 0; transform: translateY(12px); }
+        .ms-card-enter {
+          animation: ms-enter 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+        @keyframes ms-enter {
+          from { opacity: 0; transform: translateY(28px); }
           to   { opacity: 1; transform: translateY(0); }
         }
-        .ms-left {
-          display: flex;
-          flex-direction: column;
-          gap: 14px;
+        .ms-card-enter .ms-big-year  { animation: ms-enter 0.5s 0.04s cubic-bezier(0.22,1,0.36,1) both; }
+        .ms-card-enter .ms-tag       { animation: ms-enter 0.5s 0.10s cubic-bezier(0.22,1,0.36,1) both; }
+        .ms-card-enter .ms-heading   { animation: ms-enter 0.5s 0.08s cubic-bezier(0.22,1,0.36,1) both; }
+        .ms-card-enter .ms-body      { animation: ms-enter 0.5s 0.14s cubic-bezier(0.22,1,0.36,1) both; }
+        .ms-card-enter .ms-stat      { animation: ms-enter 0.5s 0.20s cubic-bezier(0.22,1,0.36,1) both; }
+        .ms-card-enter .ms-divider   { animation: ms-divider-grow 0.6s 0.06s cubic-bezier(0.22,1,0.36,1) both; }
+        @keyframes ms-divider-grow {
+          from { transform: scaleY(0); opacity: 0; }
+          to   { transform: scaleY(1); opacity: 1; }
         }
+        .ms-left { display: flex; flex-direction: column; gap: 14px; }
         .ms-big-year {
           font-family: 'DM Serif Display', Georgia, serif;
           font-size: clamp(5rem, 11vw, 9rem);
@@ -179,12 +237,9 @@ export function MilestonesSection() {
         .ms-divider {
           width: 1px;
           align-self: stretch;
+          transform-origin: top center;
         }
-        .ms-right {
-          display: flex;
-          flex-direction: column;
-          gap: 12px;
-        }
+        .ms-right { display: flex; flex-direction: column; gap: 12px; }
         .ms-heading {
           font-family: 'DM Serif Display', Georgia, serif;
           font-size: clamp(1.6rem, 2.5vw, 2.4rem);
@@ -210,12 +265,16 @@ export function MilestonesSection() {
           display: inline-block;
           margin-top: 8px;
         }
-        /* Nav buttons */
+        .ms-footer {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-top: 2.5rem;
+        }
         .ms-nav {
           display: flex;
           align-items: center;
           gap: 12px;
-          margin-top: 2.5rem;
         }
         .ms-btn {
           width: 40px;
@@ -227,52 +286,57 @@ export function MilestonesSection() {
           display: flex;
           align-items: center;
           justify-content: center;
-          transition: all 0.2s;
+          transition: background 0.2s, color 0.2s, border-color 0.2s;
           color: #111;
         }
         .ms-btn:hover:not(:disabled) {
-          background: #111;
+          background: #0A7C3F;
           color: #fff;
-          border-color: #111;
+          border-color: #0A7C3F;
         }
-        .ms-btn:disabled {
-          opacity: 0.25;
-          cursor: default;
-        }
+        .ms-btn:disabled { opacity: 0.25; cursor: default; }
         .ms-counter {
           font-size: 11px;
           letter-spacing: 0.15em;
           color: rgba(0,0,0,0.25);
         }
-
-        /* Mobile */
+        .ms-progress-track {
+          width: 120px;
+          height: 2px;
+          background: rgba(0,0,0,0.08);
+          border-radius: 99px;
+          overflow: hidden;
+        }
+        .ms-progress-fill {
+          height: 100%;
+          border-radius: 99px;
+        }
         @media (max-width: 640px) {
-          .ms-card {
-            grid-template-columns: 1fr;
-            grid-template-rows: auto auto auto;
-            gap: 1.5rem 0;
-          }
+          .ms-card { grid-template-columns: 1fr; gap: 1.5rem 0; }
           .ms-divider { display: none; }
           .ms-big-year { font-size: clamp(4rem, 18vw, 6rem); }
+          .ms-progress-track { width: 80px; }
         }
       `}</style>
 
-      <div className="ms-section">
+      <div
+        className="ms-section"
+        onMouseEnter={() => setPaused(true)}
+        onMouseLeave={() => setPaused(false)}
+      >
         <div className="ms-inner">
 
-          {/* Header */}
           <div className="ms-header">
             <p className="ms-eyebrow">Our History</p>
             <h2 className="ms-title">Two Decades of Glass</h2>
           </div>
 
-          {/* Timeline track */}
           <div className="ms-track">
             {MILESTONES.map((stop, i) => (
               <div
                 key={i}
                 className={`ms-stop${i === active ? " active" : ""}`}
-                onClick={() => go(i)}
+                onClick={() => goTo(i)}
                 role="button"
                 aria-label={`Go to ${stop.year}`}
               >
@@ -287,59 +351,60 @@ export function MilestonesSection() {
             ))}
           </div>
 
-          {/* Card — animKey forces remount for animation restart */}
-          <div className="ms-card" key={animKey} ref={cardRef}>
-            {/* Left */}
-            <div className="ms-left">
-              <div className="ms-big-year">{m.year}</div>
-              <span
-                className="ms-tag"
-                style={{ background: m.tagBg, color: m.accent }}
-              >
-                {m.tag}
-              </span>
-            </div>
-
-            {/* Divider */}
-            <div className="ms-divider" style={{ background: `${m.accent}22` }} />
-
-            {/* Right */}
-            <div className="ms-right">
-              <h3 className="ms-heading">{m.heading}</h3>
-              <p className="ms-body">{m.body}</p>
-              {m.stat && (
-                <span className="ms-stat" style={{ color: m.accent, borderColor: m.accent }}>
-                  {m.stat}
+          <div className="ms-card-wrap">
+            <div className="ms-card ms-card-enter" key={animKey}>
+              <div className="ms-left">
+                <div className="ms-big-year">{m.year}</div>
+                <span className="ms-tag" style={{ background: m.tagBg, color: m.accent }}>
+                  {m.tag}
                 </span>
-              )}
+              </div>
+              <div className="ms-divider" style={{ background: `${m.accent}22` }} />
+              <div className="ms-right">
+                <h3 className="ms-heading">{m.heading}</h3>
+                <p className="ms-body">{m.body}</p>
+                {m.stat && (
+                  <span className="ms-stat" style={{ color: m.accent, borderColor: m.accent }}>
+                    {m.stat}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
 
-          {/* Nav */}
-          <div className="ms-nav">
-            <button
-              className="ms-btn"
-              onClick={() => go(active - 1)}
-              disabled={active === 0}
-              aria-label="Previous"
-            >
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <path d="M10 3L5 8L10 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </button>
-            <button
-              className="ms-btn"
-              onClick={() => go(active + 1)}
-              disabled={active === MILESTONES.length - 1}
-              aria-label="Next"
-            >
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <path d="M6 3L11 8L6 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </button>
-            <span className="ms-counter">
-              {String(active + 1).padStart(2, "0")} / {String(MILESTONES.length).padStart(2, "0")}
-            </span>
+          <div className="ms-footer">
+            <div className="ms-nav">
+              <button
+                className="ms-btn"
+                onClick={() => goTo(Math.max(0, active - 1))}
+                disabled={active === 0}
+                aria-label="Previous"
+              >
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M10 3L5 8L10 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
+              <button
+                className="ms-btn"
+                onClick={() => goTo(Math.min(MILESTONES.length - 1, active + 1))}
+                disabled={active === MILESTONES.length - 1}
+                aria-label="Next"
+              >
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M6 3L11 8L6 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
+              <span className="ms-counter">
+                {String(active + 1).padStart(2, "0")} / {String(MILESTONES.length).padStart(2, "0")}
+              </span>
+            </div>
+
+            <div className="ms-progress-track">
+              <div
+                className="ms-progress-fill"
+                style={{ width: `${progress * 100}%`, background: m.accent }}
+              />
+            </div>
           </div>
 
         </div>
